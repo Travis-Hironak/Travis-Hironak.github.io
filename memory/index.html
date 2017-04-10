@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Memory en Javascript</title>
+  <meta name="viewport" content="user-scalable=no, initial-scale = 1, minimum-scale = 1, maximum-scale = 1, width=device-width">
+
+  <link href='http://fonts.googleapis.com/css?family=Alegreya+Sans:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+
+  <link rel="icon" type="image/png" href="/assets/favicon.png"/>
+
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/functions.js"></script>
+</head>
+
+<body>
+
+<header>
+  <nav class="navbar">
+    <div id="headerIcons">
+      <a href="https://twitter.com/Travis_Hironak"><div id="twitter"></div></a>
+      <a href="http://www.youtube.com/user/TravisHironak"><div id="youtube"></div></a>
+    </div>
+    <a href="/"><div id="title"></div></a>
+  </nav>
+</header>
+
+<div id="column">
+  <div class="postHeader">
+  <h2 class="postTitle">Memory en Javascript</h2>
+  <div class="postInfos">
+    Le
+    <div class="date">
+      
+      10
+      Avril
+        
+      2017
+    </div>
+    par
+    <div class="author">Travis</div>
+  </div>
+</div>
+
+<div class="postContent">
+  <link rel="stylesheet" href="/css/memory.css">
+
+<p>Simple jeu de Memory réalisé en Javascript et CSS3 :</p>
+
+<div id="memory"></div>
+
+<div id="memInfo">
+  <div id="memControls">
+    <span>Nombre de paires :</span>
+    <input type="number" id="pairs" min="4" max="16" value="8"></input>
+    <button id="reset" onclick="reset()">Reset</button>
+  </div>
+  <p><b>Score :</b> <span id="score">0</span></p>
+</div>
+
+<script src="/js/memory.js"></script>
+
+<br>
+
+<p>J'ai récemment décidé de me mettre au Javascript et d'approfondir un peu mes connaissances en HTML5 et CCS3. Ce petit jeu de Memory est le premier exercice que j'ai fait pour mettre en pratique ce que j'ai appris. L'idée m'est venue en lisant <i>HTML5 Hacks</i> par <i>O'Reilly</i>, plus particulièrement le Hack #25 qui expliquait comment réaliser un retournement de carte iOS-Style.</p>
+<p>J'ai attaqué par la création d'une carte que je pouvais tourner et retourner en cliquant dessus. Jusque là rien de bien compliqué, j'utilisais simplement <code>classList.toggle</code> pour ajouter/retirer la class <code>flipped</code> à laquelle était liée mon animation.</p>
+
+<div class="spoiler">
+  <button class="spoilTrigger" onclick="spoiler()">Afficher code (CSS)</button>
+  <div class="spoilContent">
+<div class="highlight"><pre><code class="css"><span class="nc">.card</span> <span class="p">{</span>
+  <span class="n">transition</span><span class="o">:</span> <span class="n">transform</span> <span class="m">0.6s</span><span class="p">;</span>
+  <span class="n">transform</span><span class="o">-</span><span class="n">style</span><span class="o">:</span> <span class="n">preserve</span><span class="m">-3</span><span class="n">d</span><span class="p">;</span>
+  <span class="n">transform</span><span class="o">-</span><span class="n">origin</span><span class="o">:</span> <span class="k">center</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nc">.card.flipped</span> <span class="p">{</span>
+  <span class="n">transform</span><span class="o">:</span> <span class="n">rotateY</span><span class="p">(</span><span class="m">-180</span><span class="n">deg</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="nc">.front</span><span class="o">,</span> <span class="nc">.back</span> <span class="p">{</span>
+  <span class="k">position</span><span class="o">:</span> <span class="k">absolute</span><span class="p">;</span>
+  <span class="k">width</span><span class="o">:</span> <span class="m">100</span><span class="o">%</span><span class="p">;</span>
+  <span class="k">height</span><span class="o">:</span> <span class="m">100</span><span class="o">%</span><span class="p">;</span>
+  <span class="n">backface</span><span class="o">-</span><span class="k">visibility</span><span class="o">:</span> <span class="k">hidden</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nc">.front</span> <span class="p">{</span>
+  <span class="n">transform</span><span class="o">:</span> <span class="n">rotateY</span><span class="p">(</span><span class="m">-180</span><span class="n">deg</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+  </div>
+</div>
+
+<p>L'étape suivante consistait à augmenter le nombre de cartes tout en pouvant les retourner indépendamment les unes des autres. Pour ceux qui s'y connaissent ça peut paraitre facile mais c'est certainement ce qui m'a donné le plus de fil à retordre. Le principal problème étant d'arriver à reconnaître sur quelle carte le clic avait été effectué. J'ai au final opté pour l'attribution d'un id unique à chacune des cartes et l'appel de ma fonction <code>flip()</code> depuis la carte avec <code>onclick</code>:</p>
+
+<div class="spoiler">
+  <button class="spoilTrigger" onclick="spoiler()">Afficher code (HTML)</button>
+  <div class="spoilContent">
+<div class="highlight"><pre><code class="html"><span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;A1&quot;</span> <span class="na">class=</span><span class="s">&quot;card&quot;</span> <span class="na">onclick=</span><span class="s">&quot;flip(this.id)&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;front&quot;</span><span class="nt">&gt;</span>A<span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;back&quot;</span><span class="nt">&gt;&lt;/div&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+</code></pre></div>
+  </div>
+</div>
+
+<p>Le moment était venu de créer le comportement normal du Memory, c'est à dire d'avoir à retourner deux cartes et si elles ne sont pas identiques, les retourner à nouveau.</p>
+
+<div class="spoiler">
+  <button class="spoilTrigger" onclick="spoiler()">Afficher code (JavaScript)</button>
+  <div class="spoilContent">
+<div class="highlight"><pre><code class="javascript"><span class="kd">var</span> <span class="nx">memory</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;memory&#39;</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">cards</span> <span class="o">=</span> <span class="nx">memory</span><span class="p">.</span><span class="nx">getElementsByClassName</span><span class="p">(</span><span class="s1">&#39;card&#39;</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">flipped</span> <span class="o">=</span> <span class="nx">memory</span><span class="p">.</span><span class="nx">getElementsByClassName</span><span class="p">(</span><span class="s1">&#39;flipped&#39;</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">elem</span><span class="p">,</span> <span class="nx">pair</span><span class="p">,</span> <span class="nx">pairFound</span><span class="p">;</span>
+
+<span class="kd">function</span> <span class="nx">isEven</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="p">(</span><span class="nx">x</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span> <span class="c1">// Renvoie true si x est pair, false si impair</span>
+
+<span class="kd">function</span> <span class="nx">flip</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">elem</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span> <span class="c1">// elem = id de la carte cliquee</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="nx">elem</span><span class="p">.</span><span class="nx">classList</span><span class="p">.</span><span class="nx">contains</span><span class="p">(</span><span class="s1">&#39;flipped&#39;</span><span class="p">)</span> <span class="o">===</span> <span class="kc">false</span><span class="p">)</span> <span class="p">{</span> 
+  <span class="c1">// verifie que la carte n&#39;est pas deja retournee</span>
+
+    <span class="nx">elem</span><span class="p">.</span><span class="nx">classList</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;flipped&#39;</span><span class="p">);</span> <span class="c1">// retourne la carte</span>
+
+    <span class="nx">pair</span> <span class="o">=</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">classList</span><span class="p">.</span><span class="nx">item</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="c1">// paire a laquelle la carte appartient</span>
+    <span class="nx">pairFound</span> <span class="o">=</span> <span class="nx">memory</span><span class="p">.</span><span class="nx">getElementsByClassName</span><span class="p">(</span><span class="nx">pair</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="s1">&#39;flipped&#39;</span><span class="p">);</span>
+    <span class="c1">// Liste des cartes retournees ayant appartenant a la meme paire</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nx">isEven</span><span class="p">(</span><span class="nx">flipped</span><span class="p">.</span><span class="nx">length</span><span class="p">))</span> <span class="p">{</span> <span class="c1">// si nb de cartes retournees est pair</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">pairFound</span><span class="p">.</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// si les deux cartes sont identiques</span>
+        <span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">pairFound</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">classList</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;found&#39;</span><span class="p">);</span> <span class="c1">// ajoute la classe found</span>
+        <span class="p">}</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nx">setTimeout</span> <span class="p">(</span><span class="nx">unflip</span><span class="p">,</span> <span class="mi">700</span><span class="p">);</span> <span class="c1">// appele la fonction unflip apres 0.7sec</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">unflip</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">fl</span> <span class="o">=</span> <span class="nx">flipped</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="c1">//nb de cartes retournees</span>
+  <span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="nx">fl</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span><span class="o">--</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">flipped</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">classList</span><span class="p">.</span><span class="nx">contains</span><span class="p">(</span><span class="s1">&#39;found&#39;</span><span class="p">))</span> <span class="p">{</span> <span class="k">continue</span><span class="p">;</span> <span class="p">}</span> 
+    <span class="c1">// saute cette etape si la carte appartient a une paire trouvee</span>
+    <span class="nx">flipped</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">classList</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="s1">&#39;flipped&#39;</span><span class="p">);</span> <span class="c1">// retourne la carte</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+  </div>
+</div>
+
+<p>J'ai ensuite ajouté un simple système de score, qui augmente de 1 à chaque fois que l'on retourne une carte; et un bouton Reset pour retourner toutes les cartes et les mélanger. J'ai également ajouté la possibilité de choisir le nombre de paires de cartes.</p>
+
+<div class="spoiler">
+  <button class="spoilTrigger" onclick="spoiler()">Afficher code (JavaScript)</button>
+  <div class="spoilContent">
+<div class="highlight"><pre><code class="javascript"><span class="kd">function</span> <span class="nx">reset</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">draw</span><span class="p">();</span> <span class="c1">// remplace l&#39;ensemble du Memory par le nb de paires choisi</span>
+  <span class="nx">score</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;score&#39;</span><span class="p">).</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">score</span><span class="p">;</span> <span class="c1">// MaJ du score</span>
+  <span class="nx">randomize</span><span class="p">();</span> <span class="c1">// Melange les cartes</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">randomize</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">cardsArray</span> <span class="o">=</span> <span class="p">[];</span> <span class="c1">// Cree un Array vide</span>
+  <span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">cards</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">cardsArray</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">cards</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">outerHTML</span><span class="p">);</span> <span class="c1">// Ajoute les cartes a l&#39;Array</span>
+  <span class="p">}</span>
+  <span class="nx">cardsArray</span><span class="p">.</span><span class="nx">sort</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">){</span><span class="k">return</span> <span class="mf">0.5</span> <span class="o">-</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()});</span> <span class="c1">// Melange</span>
+  <span class="kd">var</span> <span class="nx">memCards</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+  <span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">cardsArray</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">memCards</span> <span class="o">+=</span> <span class="nx">cardsArray</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span> <span class="c1">// Distribue les cartes</span>
+  <span class="p">}</span>
+  <span class="nx">memory</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">memCards</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">incrLetter</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nb">String</span><span class="p">.</span><span class="nx">fromCharCode</span><span class="p">(</span><span class="nx">x</span><span class="p">.</span><span class="nx">charCodeAt</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span> <span class="c1">// Incremente une lettre</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">draw</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">pairs</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;pairs&#39;</span><span class="p">).</span><span class="nx">value</span><span class="p">;</span> <span class="c1">// Recupere le nb de</span>
+  <span class="kd">var</span> <span class="nx">letter</span> <span class="o">=</span> <span class="s1">&#39;A&#39;</span><span class="p">;</span>                                   <span class="c1">// paires voulu</span>
+  <span class="kd">var</span> <span class="nx">memCards</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+  <span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">pairs</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">memCards</span> <span class="o">+=</span> <span class="s1">&#39;&lt;div id=&quot;&#39;</span> <span class="o">+</span> <span class="nx">letter</span> <span class="o">+</span> <span class="s1">&#39;1&quot; class=&quot;card mem&#39;</span> <span class="o">+</span> <span class="nx">letter</span> <span class="o">+</span>
+      <span class="s1">&#39;&quot; onclick=&quot;flip(this.id)&quot;&gt;&#39;</span> <span class="o">+</span> <span class="s1">&#39;&lt;div class=&quot;front&quot;&gt;&#39;</span> <span class="o">+</span> <span class="nx">letter</span> <span class="o">+</span>
+      <span class="s1">&#39;&lt;/div&gt;&lt;div class=&quot;back&quot;&gt;&lt;/div&gt;&lt;/div&gt;&#39;</span> <span class="o">+</span>
+      <span class="s1">&#39;&lt;div id=&quot;&#39;</span> <span class="o">+</span> <span class="nx">letter</span> <span class="o">+</span> <span class="s1">&#39;2&quot; class=&quot;card mem&#39;</span> <span class="o">+</span> <span class="nx">letter</span> <span class="o">+</span>
+      <span class="s1">&#39;&quot; onclick=&quot;flip(this.id)&quot;&gt;&#39;</span> <span class="o">+</span> <span class="s1">&#39;&lt;div class=&quot;front&quot;&gt;&#39;</span> <span class="o">+</span> <span class="nx">letter</span> <span class="o">+</span>
+      <span class="s1">&#39;&lt;/div&gt;&lt;div class=&quot;back&quot;&gt;&lt;/div&gt;&lt;/div&gt;&#39;</span><span class="p">;</span>
+    <span class="nx">letter</span> <span class="o">=</span> <span class="nx">incrLetter</span><span class="p">(</span><span class="nx">letter</span><span class="p">);</span>
+  <span class="p">}</span> <span class="c1">// Cree les cartes pour chaque paire</span>
+  <span class="nx">memory</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">memCards</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+  </div>
+</div>
+
+<p>Et voici le code final :</p>
+
+<div class="spoiler">
+  <button class="spoilTrigger" onclick="spoiler()">Afficher code (JavaScript)</button>
+  <div class="spoilContent">
+<div class="highlight"><pre><code class="javascript"><span class="kd">var</span> <span class="nx">memory</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;memory&#39;</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">cards</span> <span class="o">=</span> <span class="nx">memory</span><span class="p">.</span><span class="nx">getElementsByClassName</span><span class="p">(</span><span class="s1">&#39;card&#39;</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">flipped</span> <span class="o">=</span> <span class="nx">memory</span><span class="p">.</span><span class="nx">getElementsByClassName</span><span class="p">(</span><span class="s1">&#39;flipped&#39;</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">score</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="kd">var</span> <span class="nx">elem</span><span class="p">,</span> <span class="nx">pair</span><span class="p">,</span> <span class="nx">pairFound</span><span class="p">;</span>
+
+<span class="nx">draw</span><span class="p">();</span>
+<span class="nx">randomize</span><span class="p">();</span>
+
+<span class="kd">function</span> <span class="nx">isEven</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="p">(</span><span class="nx">x</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">incrLetter</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nb">String</span><span class="p">.</span><span class="nx">fromCharCode</span><span class="p">(</span><span class="nx">x</span><span class="p">.</span><span class="nx">charCodeAt</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">flip</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">elem</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="nx">elem</span><span class="p">.</span><span class="nx">classList</span><span class="p">.</span><span class="nx">contains</span><span class="p">(</span><span class="s1">&#39;flipped&#39;</span><span class="p">)</span> <span class="o">===</span> <span class="kc">false</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="nx">elem</span><span class="p">.</span><span class="nx">classList</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;flipped&#39;</span><span class="p">);</span>
+    <span class="nx">score</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;score&#39;</span><span class="p">).</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">score</span><span class="p">;</span>
+
+    <span class="nx">pair</span> <span class="o">=</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">classList</span><span class="p">.</span><span class="nx">item</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+    <span class="nx">pairFound</span> <span class="o">=</span> <span class="nx">memory</span><span class="p">.</span><span class="nx">getElementsByClassName</span><span class="p">(</span><span class="nx">pair</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="s1">&#39;flipped&#39;</span><span class="p">);</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nx">isEven</span><span class="p">(</span><span class="nx">flipped</span><span class="p">.</span><span class="nx">length</span><span class="p">))</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">pairFound</span><span class="p">.</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">pairFound</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">classList</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;found&#39;</span><span class="p">);</span>
+        <span class="p">}</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nx">setTimeout</span> <span class="p">(</span><span class="nx">unflip</span><span class="p">,</span> <span class="mi">700</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">unflip</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">fl</span> <span class="o">=</span> <span class="nx">flipped</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+  <span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="nx">fl</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span><span class="o">--</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">flipped</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">classList</span><span class="p">.</span><span class="nx">contains</span><span class="p">(</span><span class="s1">&#39;found&#39;</span><span class="p">))</span> <span class="p">{</span> <span class="k">continue</span><span class="p">;</span> <span class="p">}</span>
+    <span class="nx">flipped</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">classList</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="s1">&#39;flipped&#39;</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">reset</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">draw</span><span class="p">();</span>
+  <span class="nx">score</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;score&#39;</span><span class="p">).</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">score</span><span class="p">;</span>
+  <span class="nx">randomize</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">randomize</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">cardsArray</span> <span class="o">=</span> <span class="p">[];</span>
+  <span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">cards</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">cardsArray</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">cards</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">outerHTML</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="nx">cardsArray</span><span class="p">.</span><span class="nx">sort</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">){</span><span class="k">return</span> <span class="mf">0.5</span> <span class="o">-</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()});</span>
+  <span class="kd">var</span> <span class="nx">memCards</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+  <span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">cardsArray</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">memCards</span> <span class="o">+=</span> <span class="nx">cardsArray</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+  <span class="p">}</span>
+  <span class="nx">memory</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">memCards</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">draw</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">pairs</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;pairs&#39;</span><span class="p">).</span><span class="nx">value</span><span class="p">;</span>
+  <span class="kd">var</span> <span class="nx">letter</span> <span class="o">=</span> <span class="s1">&#39;A&#39;</span><span class="p">;</span>
+  <span class="kd">var</span> <span class="nx">memCards</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+  <span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">pairs</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">memCards</span> <span class="o">+=</span> <span class="s1">&#39;&lt;div id=&quot;&#39;</span> <span class="o">+</span> <span class="nx">letter</span> <span class="o">+</span> <span class="s1">&#39;1&quot; class=&quot;card mem&#39;</span> <span class="o">+</span> <span class="nx">letter</span> <span class="o">+</span>
+      <span class="s1">&#39;&quot; onclick=&quot;flip(this.id)&quot;&gt;&#39;</span> <span class="o">+</span> <span class="s1">&#39;&lt;div class=&quot;front&quot;&gt;&#39;</span> <span class="o">+</span> <span class="nx">letter</span> <span class="o">+</span>
+      <span class="s1">&#39;&lt;/div&gt;&lt;div class=&quot;back&quot;&gt;&lt;/div&gt;&lt;/div&gt;&#39;</span> <span class="o">+</span>
+      <span class="s1">&#39;&lt;div id=&quot;&#39;</span> <span class="o">+</span> <span class="nx">letter</span> <span class="o">+</span> <span class="s1">&#39;2&quot; class=&quot;card mem&#39;</span> <span class="o">+</span> <span class="nx">letter</span> <span class="o">+</span>
+      <span class="s1">&#39;&quot; onclick=&quot;flip(this.id)&quot;&gt;&#39;</span> <span class="o">+</span> <span class="s1">&#39;&lt;div class=&quot;front&quot;&gt;&#39;</span> <span class="o">+</span> <span class="nx">letter</span> <span class="o">+</span>
+      <span class="s1">&#39;&lt;/div&gt;&lt;div class=&quot;back&quot;&gt;&lt;/div&gt;&lt;/div&gt;&#39;</span><span class="p">;</span>
+    <span class="nx">letter</span> <span class="o">=</span> <span class="nx">incrLetter</span><span class="p">(</span><span class="nx">letter</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="nx">memory</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">memCards</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+  </div>
+</div>
+
+<p>Evidemment, puisqu'il s'agit de mon tout premier exercice de Javascript c'est certainement loin d'être parfait. Mais cela m'a permis de mettre en pratique une partie des choses que j'avais apprises et d'en découvrir d'autres (comme les node-lists par exemple).</p>
+<p>La prochaine étape sera certainement de créer des images en SVG (Scalable Vector Graphics) pour chacune des paires et de proposer un choix entre lettres et images, ainsi qu'une option pour afficher ou non le fond coloré.</p>
+
+</div>
+    
+
+  
+    <div id="disqus_thread"></div>
+      <script type="text/javascript">
+        var disqus_shortname = 'hironak';
+        var disqus_identifier = 'hironak00004';
+        var disqus_url = 'http://hironak.fr/memory';
+        var disqus_title = 'Memory en Javascript';
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+          dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+      </script>
+      <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+      <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+  
+
+</div>
+
+<footer>
+  Hironak.fr est mis à votre disposition selon les termes de la <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/fr/">Licence Creative Commons Attribution -  Partage dans les Mêmes Conditions 3.0 France</a>.
+  <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/fr/"><img  class="license" alt="Licence Creative Commons" src="http://i.creativecommons.org/l/by-sa/3.0/fr/80x15.png" /></a>
+  <br>
+  <a href="/about">- À propos de Hironak.fr -</a>
+</footer>
+
+</body>
+</html>
