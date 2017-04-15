@@ -130,7 +130,7 @@
 
     <span class="nx">pair</span> <span class="o">=</span> <span class="nx">elem</span><span class="p">.</span><span class="nx">classList</span><span class="p">.</span><span class="nx">item</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="c1">// paire a laquelle la carte appartient</span>
     <span class="nx">pairFound</span> <span class="o">=</span> <span class="nx">memory</span><span class="p">.</span><span class="nx">getElementsByClassName</span><span class="p">(</span><span class="nx">pair</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span> <span class="o">+</span> <span class="s1">&#39;flipped&#39;</span><span class="p">);</span>
-    <span class="c1">// Liste des cartes retournees ayant appartenant a la meme paire</span>
+    <span class="c1">// Liste des cartes retournees appartenant a la meme paire</span>
 
     <span class="k">if</span> <span class="p">(</span><span class="nx">isEven</span><span class="p">(</span><span class="nx">flipped</span><span class="p">.</span><span class="nx">length</span><span class="p">))</span> <span class="p">{</span> <span class="c1">// si nb de cartes retournees est pair</span>
       <span class="k">if</span> <span class="p">(</span><span class="nx">pairFound</span><span class="p">.</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// si les deux cartes sont identiques</span>
@@ -303,24 +303,23 @@
 </div>
     
 
-  
-    <div id="disqus_thread"></div>
-      <script type="text/javascript">
-        var disqus_shortname = 'hironak';
-        var disqus_identifier = 'hironak00004';
-        var disqus_url = 'http://hironak.fr/memory';
-        var disqus_title = 'Memory en Javascript';
-        /* * * DON'T EDIT BELOW THIS LINE * * */
-        (function() {
-          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-          dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-        })();
-      </script>
-      <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-      <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
-  
 
+  <div id="disqus_thread"></div>
+  <script>
+    var disqus_config = function () {
+      this.page.url = 'http://hironak.fr/memory';
+      this.page.identifier = 'hironak00004'; 
+    };
+    (function() { // DON'T EDIT BELOW THIS LINE
+      var d = document, s = d.createElement('script');
+      s.src = 'https://hironak.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+                                
 </div>
 
 <footer>
@@ -330,5 +329,6 @@
   <a href="/about">- À propos de Hironak.fr -</a>
 </footer>
 
+<script id="dsq-count-scr" src="//hironak.disqus.com/count.js" async></script>
 </body>
 </html>
