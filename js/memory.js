@@ -15,6 +15,24 @@ function incrLetter(x) {
   return String.fromCharCode(x.charCodeAt(0) + 1);
 }
 
+function randomNumber(n) { // random number from 0 to (n-1)
+  return Math.floor(Math.random() * n);
+}
+
+function shuffle(array) { // Fisher-Yates-Durstenfeld Shuffle
+  var shufArray = array;
+  var lcv = array.length - 1;
+  var n, nElem, lastElem;
+  for (; lcv >= 0; lcv--) {
+    n = randomNumber(lcv + 1);
+    nElem = shufArray[n];
+    lastElem = shufArray[lcv];
+    shufArray.splice(n, 1, lastElem);
+    shufArray.splice(lcv, 1, nElem);
+  }
+  return shufArray;
+}
+
 function flip(x) {
   elem = document.getElementById(x);
 
@@ -59,7 +77,7 @@ function randomize() {
   for (i = 0; i < cards.length; i++) {
     cardsArray.push(cards[i].outerHTML);
   }
-  cardsArray.sort(function(a, b){return 0.5 - Math.random()});
+  cardsArray = shuffle(cardsArray);
   var memCards = '';
   for (i = 0; i < cardsArray.length; i++) {
     memCards += cardsArray[i];

@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Sudoku en Javascript (Etape 1)</title>
+  <meta name="viewport" content="user-scalable=no, initial-scale = 1, minimum-scale = 1, maximum-scale = 1, width=device-width">
+
+  <link href='http://fonts.googleapis.com/css?family=Alegreya+Sans:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+
+  <link rel="icon" type="image/png" href="/assets/favicon.png"/>
+
+  <link rel="stylesheet" href="/css/style.css">
+  <script src="/js/functions.js"></script>
+</head>
+
+<body>
+
+<header>
+  <nav class="navbar">
+    <div id="headerIcons">
+      <a href="https://twitter.com/Travis_Hironak"><div id="twitter"></div></a>
+      <a href="http://www.youtube.com/user/TravisHironak"><div id="youtube"></div></a>
+    </div>
+    <a href="/"><div id="title"></div></a>
+  </nav>
+</header>
+
+<div id="column">
+  <div class="postHeader">
+  <h2 class="postTitle">Sudoku en Javascript (Etape 1)</h2>
+  <div class="postInfos">
+    Le
+    <div class="date">
+      
+      21
+      Avril
+        
+      2017
+    </div>
+    par
+    <div class="author">Travis</div>
+  </div>
+</div>
+
+<div class="postContent">
+  <link rel="stylesheet" href="/css/sudoku.css">
+
+<table id="sudoku" class="sudoku"></table>
+
+<div id="sudokuInfo">
+  <div id="sudokuControls">
+    <span>Base :</span>
+    <input id="base" type="number" min="2" max="4" value="3" size="1"></input>
+    <button id="reset" onclick="reset()">Reset</button>
+  </div>
+</div>
+
+<script src="/js/sudoku.js"></script>
+
+<br>
+
+<p>Toujours dans l'idée de mettre en pratique mes connaissances basiques en Javascript, j'ai décidé de réaliser un Sudoku. Ceci est la première étape (certainement la plus simple), la génération d'une grille de Sudoku pleine. Les prochaines étant de vider certaines cases afin d'obtenir une grille (à solution unique) à remplir par le joueur, et de permettre le remplissage puis la vérification de la grille une fois remplie.</p>
+
+<p>Pour la petite anecdote, l'idée m'est venue en jouant à Mass Effect Andromeda. Les puzzles que l'on rencontre au cours du jeu sont une simple variante du Sudoku. Les différences étant l'utilisation de symboles au lieu de chiffres, et le nombre de cases réduit (4x4 et 5x5 au lieu de 9x9). Il est donc fort probable que je crée quelque-chose de similaire lorsque mon algorithme de génération de Sudoku sera complet.</p>
+
+<p>Je vais détailler ci-dessous ma démarche pour la génération de grilles complètes. A noter qu'il était important pour moi de créer quelque-chose de facilement modifiable et acceptant une base de 2 à 4. Tout étant au carré avec le Sudoku (en tout cas dans sa forme classique), cela donne des grilles de 4x4, 9x9 et 16x16. Garder également à l'esprit qu'il s'agit ici encore de mes balbutiements en Javascript et que le résultat est par conséquent loin d'être optimisé.</p>
+
+<h5 class="indent">Génération du tableau</h5>
+
+<p>Je commence par générer un tableau vide avec un nombre de cellules variant selon la base choisie avec un champ <code>input</code> de type <code>number</code>.</p>
+
+<div class="spoiler">
+  <button class="spoilTrigger" onclick="spoiler()">Afficher code (JavaScript)</button>
+  <div class="spoilContent">
+<div class="highlight"><pre><code class="javascript"><span class="kd">function</span> <span class="nx">sudokuTable</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">sudoku</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;sudoku&#39;</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">base</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;base&#39;</span><span class="p">).</span><span class="nx">value</span><span class="p">;</span> <span class="c1">// recupere la base choisie</span>
+  <span class="kd">var</span> <span class="nx">baseP</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">pow</span><span class="p">(</span><span class="nx">base</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span> <span class="c1">// base au carre</span>
+  <span class="nx">sudoku</span><span class="p">.</span><span class="nx">className</span> <span class="o">=</span> <span class="s1">&#39;n&#39;</span> <span class="o">+</span> <span class="nx">base</span><span class="p">;</span> <span class="c1">// attribue une classe au sudoku pour varier</span>
+                                 <span class="c1">// la mise en forme en fonction du nombre de</span>
+                                 <span class="c1">// lignes/colonnes</span>
+  <span class="nx">sudoku</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span> <span class="c1">// Supprime le contenu du tableau (reset)</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">y</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">y</span> <span class="o">&lt;</span> <span class="nx">baseP</span><span class="p">;</span> <span class="nx">y</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span> 
+    <span class="kd">var</span> <span class="nx">row</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s1">&#39;tr&#39;</span><span class="p">);</span> <span class="c1">// cree une ligne</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">x</span> <span class="o">&lt;</span> <span class="nx">baseP</span><span class="p">;</span> <span class="nx">x</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">cell</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s1">&#39;td&#39;</span><span class="p">);</span> <span class="c1">// cree une cellule</span>
+      <span class="nx">row</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">cell</span><span class="p">);</span> <span class="c1">// ajoute la cellule a la ligne</span>
+    <span class="p">}</span>
+    <span class="nx">sudoku</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">row</span><span class="p">);</span> <span class="c1">// ajoute la ligne au tableau</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+  </div>
+</div>
+
+<p>La taille des cellules et la séparation entre les blocs (2x2, 3x3 ou 4x4) est gérée avec un peu de CSS.</p>
+
+<div class="spoiler"> 
+  <button class="spoilTrigger" onclick="spoiler()">Afficher code (CSS)</button>
+  <div class="spoilContent">
+<div class="highlight"><pre><code class="css"><span class="nf">#sudoku</span> <span class="p">{</span>
+  <span class="k">margin</span><span class="o">:</span> <span class="m">0</span> <span class="k">auto</span><span class="p">;</span>
+  <span class="k">border-collapse</span><span class="o">:</span> <span class="k">collapse</span><span class="p">;</span> <span class="o">//</span> <span class="n">Bordure</span> <span class="n">commune</span> <span class="n">entre</span> <span class="n">cellules</span> <span class="n">adjacentes</span>
+  <span class="k">border</span><span class="o">:</span> <span class="m">2px</span> <span class="k">solid</span><span class="p">;</span>
+  <span class="k">font-size</span><span class="o">:</span> <span class="m">2</span><span class="o">.</span><span class="m">6</span><span class="n">rem</span><span class="p">;</span>
+  <span class="k">text-align</span><span class="o">:</span> <span class="k">center</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nf">#sudoku</span> <span class="nt">td</span> <span class="p">{</span>
+  <span class="k">width</span><span class="o">:</span> <span class="m">4</span><span class="n">rem</span><span class="p">;</span>
+  <span class="k">height</span><span class="o">:</span> <span class="m">4</span><span class="n">rem</span><span class="p">;</span>
+  <span class="k">border</span><span class="o">:</span> <span class="m">1px</span> <span class="k">solid</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nf">#sudoku</span><span class="nc">.n2</span> <span class="nt">tr</span><span class="nd">:nth-of-type</span><span class="o">(</span><span class="nt">2n</span><span class="o">)</span> <span class="nt">td</span><span class="o">,</span> 
+<span class="nf">#sudoku</span><span class="nc">.n3</span> <span class="nt">tr</span><span class="nd">:nth-of-type</span><span class="o">(</span><span class="nt">3n</span><span class="o">)</span> <span class="nt">td</span><span class="o">,</span> 
+<span class="nf">#sudoku</span><span class="nc">.n4</span> <span class="nt">tr</span><span class="nd">:nth-of-type</span><span class="o">(</span><span class="nt">4n</span><span class="o">)</span> <span class="nt">td</span> <span class="p">{</span> <span class="o">//</span> <span class="n">cellules</span> <span class="n">positionnees</span> <span class="n">toutes</span> <span class="n">les</span>
+  <span class="k">border-bottom-width</span><span class="o">:</span> <span class="m">2px</span><span class="p">;</span>        <span class="o">//</span> <span class="m">2</span><span class="o">,</span><span class="m">3</span> <span class="n">ou</span> <span class="m">4</span> <span class="n">lignes</span>
+<span class="p">}</span>
+
+<span class="nf">#sudoku</span><span class="nc">.n2</span> <span class="nt">td</span><span class="nd">:nth-of-type</span><span class="o">(</span><span class="nt">2n</span><span class="o">),</span> 
+<span class="nf">#sudoku</span><span class="nc">.n3</span> <span class="nt">td</span><span class="nd">:nth-of-type</span><span class="o">(</span><span class="nt">3n</span><span class="o">),</span> 
+<span class="nf">#sudoku</span><span class="nc">.n4</span> <span class="nt">td</span><span class="nd">:nth-of-type</span><span class="o">(</span><span class="nt">4n</span><span class="o">)</span> <span class="p">{</span> <span class="o">//</span> <span class="n">cellules</span> <span class="n">positionnees</span> <span class="n">toutes</span> <span class="n">les</span> 
+  <span class="k">border-right</span><span class="o">-</span><span class="k">width</span><span class="o">:</span> <span class="m">2px</span><span class="p">;</span>      <span class="o">//</span> <span class="m">2</span><span class="o">,</span><span class="m">3</span> <span class="n">ou</span> <span class="m">4</span> <span class="n">colonnes</span>
+<span class="p">}</span>
+</code></pre></div>
+  </div>
+</div>
+
+<h5 class="indent">Remplissage de la grille</h5>
+
+<p>Ici, les choses se compliquent déjà car il y a pas mal de conditions à respecter. Premièrement, on veut générer une grille aléatoire, il faut donc s'assurer qu'elle sera quasiment toujours différente et que les grilles, même si différentes, ne suivent pas un pattern similaire. Ensuite il faut bien entendu respecter les règles du Sudoku, c'est à dire que chaque numéro ne peut apparaitre qu'une fois par ligne, par colonne et par bloc.</p>
+
+<p>La méthode que j'ai employée consiste à remplir la grille de gauche à droite et de haut en bas avec un nombre aléatoire, tout en vérifiant qu'il n'est pas déjà présent dans la ligne, la colonne ou le bloc. Pour cela, je créée une boucle qui se répète pour chaque ligne, au sein de laquelle se trouve une autre boucle pour chaque cellule/colonne afin d'effectuer la même opération pour toutes les cases du Sudoku.</p>
+
+<p>Pour cette opération, je crée un <a href="https://www.w3schools.com/js/js_arrays.asp">array</a> <b>nbArray</b> contenant les nombres de 1 à n² (avec n = base) que je mélange ensuite. Je crée également un array <b>nbFilled</b> auquel j'ajoute tous les nombres déjà présents dans la ligne, la colonne et le bloc. Il ne me reste plus qu'à comparer les deux arrays pour déterminer les nombres compatibles avec la cellule actuelle.</p>
+
+<p>Plutôt que de soustraire le contenu de <b>nbFilled</b> à <b>nbArray</b>, j'extrais simplement la première valeur de <b>nbArray</b> et vérifie sa présence dans <b>nbFilled</b>, si elle n'est pas présente j'affecte simplement cette valeur à la cellule actuelle. Si elle est présente dans <b>nbFilled</b> (autrement dit si le nombre figure déjà dans la ligne, la colonne ou le bloc) j'extrais la prochaine valeur de <b>nbArray</b> et réitère le processus.</p>
+
+<div class="spoiler">
+  <button class="spoilTrigger" onclick="spoiler()">Afficher code (JavaScript)</button>
+  <div class="spoilContent">
+<div class="highlight"><pre><code class="javascript"><span class="kd">function</span> <span class="nx">sudokuFill</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">sudoku</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;sudoku&#39;</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">rows</span> <span class="o">=</span> <span class="nx">sudoku</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;tr&#39;</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">base</span> <span class="o">=</span> <span class="nb">Number</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;base&#39;</span><span class="p">).</span><span class="nx">value</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">baseP</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">pow</span><span class="p">(</span><span class="nx">base</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
+
+  <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">y</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">y</span> <span class="o">&lt;</span> <span class="nx">baseP</span><span class="p">;</span> <span class="nx">y</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// pour chaque ligne</span>
+    <span class="kd">var</span> <span class="nx">row</span> <span class="o">=</span> <span class="nx">rows</span><span class="p">[</span><span class="nx">y</span><span class="p">];</span>
+    <span class="kd">var</span> <span class="nx">rowCells</span> <span class="o">=</span> <span class="nx">row</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;td&#39;</span><span class="p">);</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">x</span> <span class="o">&lt;</span> <span class="nx">baseP</span><span class="p">;</span> <span class="nx">x</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// pour chaque cellule/colonne</span>
+      <span class="kd">var</span> <span class="nx">cell</span> <span class="o">=</span> <span class="nx">rowCells</span><span class="p">[</span><span class="nx">x</span><span class="p">];</span>
+
+      <span class="kd">var</span> <span class="nx">nbArray</span> <span class="o">=</span> <span class="p">[];</span> <span class="c1">// Array 1 a n^2</span>
+      <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;=</span> <span class="nx">baseP</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span> <span class="nx">nbArray</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">i</span><span class="p">);</span> <span class="p">}</span>
+      <span class="nx">nbArray</span><span class="p">.</span><span class="nx">sort</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">){</span><span class="k">return</span> <span class="mf">0.5</span> <span class="o">-</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()});</span> <span class="c1">// melanges</span>
+
+      <span class="kd">var</span> <span class="nx">nbFilled</span> <span class="o">=</span> <span class="p">[];</span> <span class="c1">// Nombres deja dans ligne, colonne ou bloc</span>
+
+      <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">j</span> <span class="o">&lt;</span> <span class="nx">baseP</span><span class="p">;</span> <span class="nx">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// pour chaque cellule dans la ligne</span>
+        <span class="kd">var</span> <span class="nx">sCellContent</span> <span class="o">=</span> <span class="nb">Number</span><span class="p">(</span><span class="nx">rowCells</span><span class="p">[</span><span class="nx">j</span><span class="p">].</span><span class="nx">innerHTML</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">sCellContent</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">nbFilled</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">sCellContent</span><span class="p">);</span> <span class="c1">// ajoute les nombres presents</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+
+      <span class="k">for</span> <span class="p">(</span><span class="nx">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">j</span> <span class="o">&lt;</span> <span class="nx">baseP</span><span class="p">;</span> <span class="nx">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// pour chaque cellule dans la colonne</span>
+        <span class="kd">var</span> <span class="nx">searchCell</span> <span class="o">=</span> <span class="nx">rows</span><span class="p">[</span><span class="nx">j</span><span class="p">].</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;td&#39;</span><span class="p">)[</span><span class="nx">x</span><span class="p">];</span>
+        <span class="nx">sCellContent</span> <span class="o">=</span> <span class="nb">Number</span><span class="p">(</span><span class="nx">searchCell</span><span class="p">.</span><span class="nx">innerHTML</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">sCellContent</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">nbFilled</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">sCellContent</span><span class="p">);</span> <span class="c1">// ajoute les nombres presents</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+
+      <span class="kd">var</span> <span class="nx">block</span> <span class="o">=</span> <span class="nx">sudokuBlock</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">,</span> <span class="nx">base</span><span class="p">);</span> <span class="c1">// determine le bloc (voir plus bas)</span>
+      <span class="kd">var</span> <span class="nx">xMin</span> <span class="o">=</span> <span class="nx">base</span> <span class="o">*</span> <span class="nx">block</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span> <span class="kd">var</span> <span class="nx">xMax</span> <span class="o">=</span> <span class="nx">xMin</span> <span class="o">+</span> <span class="nx">base</span><span class="p">;</span>
+      <span class="kd">var</span> <span class="nx">yMin</span> <span class="o">=</span> <span class="nx">base</span> <span class="o">*</span> <span class="nx">block</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span> <span class="kd">var</span> <span class="nx">yMax</span> <span class="o">=</span> <span class="nx">yMin</span> <span class="o">+</span> <span class="nx">base</span><span class="p">;</span>
+      <span class="k">for</span> <span class="p">(</span><span class="nx">j</span> <span class="o">=</span> <span class="nx">xMin</span><span class="p">;</span> <span class="nx">j</span> <span class="o">&lt;</span> <span class="nx">xMax</span><span class="p">;</span> <span class="nx">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// pour chaque colonne du bloc</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">j</span> <span class="o">==</span> <span class="nx">x</span><span class="p">)</span> <span class="p">{</span> <span class="k">continue</span> <span class="p">}</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">k</span> <span class="o">=</span> <span class="nx">yMin</span><span class="p">;</span> <span class="nx">k</span> <span class="o">&lt;</span> <span class="nx">yMax</span><span class="p">;</span> <span class="nx">k</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// pour chaque ligne du bloc</span>
+          <span class="k">if</span> <span class="p">(</span><span class="nx">k</span> <span class="o">==</span> <span class="nx">y</span><span class="p">)</span> <span class="p">{</span> <span class="k">continue</span> <span class="p">}</span>
+          <span class="nx">searchCell</span> <span class="o">=</span> <span class="nx">rows</span><span class="p">[</span><span class="nx">k</span><span class="p">].</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;td&#39;</span><span class="p">)[</span><span class="nx">j</span><span class="p">];</span>
+          <span class="nx">sCellContent</span> <span class="o">=</span> <span class="nb">Number</span><span class="p">(</span><span class="nx">searchCell</span><span class="p">.</span><span class="nx">innerHTML</span><span class="p">);</span>
+          <span class="k">if</span> <span class="p">(</span><span class="nx">sCellContent</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">nbFilled</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">sCellContent</span><span class="p">);</span> <span class="c1">// ajoute les nombres presents</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+      
+      <span class="k">do</span> <span class="p">{</span> <span class="kd">var</span> <span class="nx">nb</span> <span class="o">=</span> <span class="nx">nbArray</span><span class="p">.</span><span class="nx">shift</span><span class="p">();</span> <span class="p">}</span>    <span class="c1">// Extrait la prochaine valeur</span>
+      <span class="k">while</span> <span class="p">(</span><span class="nx">nbFilled</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">nb</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">);</span> <span class="c1">// tant qu&#39;elle existe dans nbFilled</span>
+      <span class="nx">cell</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">nb</span><span class="p">;</span>
+    <span class="p">}</span>
+
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">sudokuBlock</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">,</span> <span class="nx">n</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// x et y sont les coordonnees de la cellule</span>
+  <span class="kd">var</span> <span class="nx">xBlock</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nx">x</span> <span class="o">/</span> <span class="nx">n</span><span class="p">);</span> <span class="c1">// n est la base (2,3 ou 4)</span>
+  <span class="kd">var</span> <span class="nx">yBlock</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nx">y</span> <span class="o">/</span> <span class="nx">n</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">block</span> <span class="o">=</span> <span class="p">[</span><span class="nx">xBlock</span><span class="p">,</span> <span class="nx">yBlock</span><span class="p">];</span>
+  <span class="k">return</span> <span class="nx">block</span><span class="p">;</span> <span class="c1">// renvoie un array contenant les coordonnees du bloc</span>
+<span class="p">}</span>
+</code></pre></div>
+  </div>
+</div>
+
+<p>Cette approche présente cependant un problème. Le fait de choisir des nombres aléatoires pour chaque case et à chaque ligne peut créer une ligne (voire une grille) partiellement remplie qui ne peut pas être complétée en rescpectant les règles du Sudoku.</p>
+
+<table class="sudoku n2 floatLeft">
+  <tr><td>1</td><td>4</td><td>3</td><td>2</td></tr>
+  <tr><td>3</td><td>2</td><td>4</td><td>1</td></tr>
+  <tr><td>4</td><td>3</td><td>2</td><td></td></tr>
+  <tr><td></td><td></td><td></td><td></td></tr>
+</table>
+
+<p>Dans l'exemple ci-contre chaque case a été remplie avec un nombre aléatoire , jusqu'à présent sans avoir de nombres identiques dans la même ligne, colone ou bloc. Cependant on peut bien voir que la dernière case de la troisième ligne ne pourra pas satisfaire ces conditions.</p>
+
+<p>Pour cet exemple on peut simplement choisir de recommencer l'arrangement des nombres de la troisième ligne jusqu'à en obtenir un qui convient (comme 2, 3, 1, 4 ou 4, 1, 2, 3). Mais avec des Sudoku de base supérieure cela n'est pas toujours possible, il faut alors réarranger plusieurs lignes.</p>
+
+<p>Dans un soucis de simplicité pour l'instant, j'ai choisi de recommencer la grille depuis la première ligne si un nombre de réarrangements consécutifs est dépassé.</p>
+
+<div class="spoiler">
+  <button class="spoilTrigger" onclick="spoiler()">Afficher code (JavaScript)</button>
+  <div class="spoilContent">
+<div class="highlight"><pre><code class="javascript"><span class="kd">function</span> <span class="nx">sudokuFill</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">base</span> <span class="o">=</span> <span class="nb">Number</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;base&#39;</span><span class="p">).</span><span class="nx">value</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">baseP</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">pow</span><span class="p">(</span><span class="nx">base</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">sudoku</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;sudoku&#39;</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">rows</span> <span class="o">=</span> <span class="nx">sudoku</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;tr&#39;</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">retries</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="kd">var</span> <span class="nx">maxRetries</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">pow</span><span class="p">(</span><span class="nx">base</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span> <span class="c1">//</span>
+
+  <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">y</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">y</span> <span class="o">&lt;</span> <span class="nx">baseP</span><span class="p">;</span> <span class="nx">y</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// pour chaque ligne</span>
+
+    <span class="k">do</span> <span class="p">{</span> <span class="c1">// execute le remplissage de la ligne une fois avant la boucle</span>
+      <span class="kd">var</span> <span class="nx">row</span> <span class="o">=</span> <span class="nx">rows</span><span class="p">[</span><span class="nx">y</span><span class="p">];</span>
+      <span class="kd">var</span> <span class="nx">rowCells</span> <span class="o">=</span> <span class="nx">row</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;td&#39;</span><span class="p">);</span>
+
+      <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">x</span> <span class="o">&lt;</span> <span class="nx">baseP</span><span class="p">;</span> <span class="nx">x</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        
+      <span class="c1">// morceau de code vu precedemment </span>
+
+      <span class="p">}</span>
+
+      <span class="kd">var</span> <span class="nx">errors</span> <span class="o">=</span>  <span class="mi">0</span><span class="p">;</span> <span class="c1">// compte le nb d&#39;erreurs dans ligne</span>
+      <span class="k">for</span> <span class="p">(</span><span class="nx">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">j</span> <span class="o">&lt;</span> <span class="nx">baseP</span><span class="p">;</span> <span class="nx">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">searchCell</span> <span class="o">=</span> <span class="nx">rowCells</span><span class="p">[</span><span class="nx">j</span><span class="p">];</span>
+        <span class="nx">sCellContent</span> <span class="o">=</span> <span class="nx">searchCell</span><span class="p">.</span><span class="nx">innerHTML</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">sCellContent</span> <span class="o">==</span> <span class="s1">&#39;undefined&#39;</span><span class="p">)</span> <span class="p">{</span> <span class="nx">errors</span><span class="o">++</span><span class="p">;</span> <span class="p">}</span>
+      <span class="p">}</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="nx">errors</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// reset la ligne si erreur</span>
+        <span class="k">for</span> <span class="p">(</span><span class="nx">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">j</span> <span class="o">&lt;</span> <span class="nx">baseP</span><span class="p">;</span> <span class="nx">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">cell</span> <span class="o">=</span> <span class="nx">rowCells</span><span class="p">[</span><span class="nx">j</span><span class="p">];</span>
+          <span class="nx">cell</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="nx">retries</span><span class="o">++</span><span class="p">;</span>
+      <span class="p">}</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="nx">retries</span> <span class="o">&gt;=</span> <span class="nx">maxRetries</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// reset si trop d&#39;erreurs d&#39;affilee</span>
+        <span class="k">for</span> <span class="p">(</span><span class="nx">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">j</span> <span class="o">&lt;</span> <span class="nx">baseP</span><span class="p">;</span> <span class="nx">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+          <span class="k">for</span> <span class="p">(</span><span class="nx">k</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">k</span> <span class="o">&lt;</span> <span class="nx">baseP</span><span class="p">;</span> <span class="nx">k</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">var</span> <span class="nx">resetCell</span> <span class="o">=</span> <span class="nx">rows</span><span class="p">[</span><span class="nx">k</span><span class="p">].</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;td&#39;</span><span class="p">)[</span><span class="nx">j</span><span class="p">];</span>
+            <span class="nx">resetCell</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="nx">retries</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">y</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="p">}</span>
+
+    <span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="nx">errors</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">);</span> <span class="c1">// repete le remplissage de la ligne si erreur</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+  </div>
+</div>
+
+<h5 class="indent">Un meilleur réarrangement aléatoire</h5>
+
+<p>Avec ce code il est possible de générer une grille de sudoku pleine en un temps satisfaisant (pour un novice). Cependant j'ai rapidement remarqué que la première méthode que j'ai utilisé pour réarranger aléatoirement mon array est loin de donner des résultats acceptable. En effet <code>array.sort(function(a, b){return 0.5 - Math.random()});</code> n'est pas si random, la grande partie du temps les nombres 7, 8 et 9 sont les trois derniers de la première ligne sur un Sudoku en base 3. J'ai donc effectué quelques recherches pour trouver une méthode donnant des résultats convenables sans avoir trop d'impact sur le temps de réarrangement.</p>
+
+<p>La même méthode était mentionné sur toutes les pages que j'ai consulté : il s'agit du <a href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle">Fisher-Yates Shuffle</a>, et plus particulièrement la <a href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle#The_modern_algorithm">version moderne</a> implémentée par Durstenfeld. J'ai mis le lien de la page Wikipédia en anglais car la page française est extrèmement limitée.</p>
+
+<p>Voici mon implémentation en JavaScript :</p>
+
+<div class="spoiler">
+  <button class="spoilTrigger" onclick="spoiler()">Afficher code (JavaScript)</button>
+  <div class="spoilContent">
+<div class="highlight"><pre><code class="javascript"><span class="kd">function</span> <span class="nx">randomNumber</span><span class="p">(</span><span class="nx">n</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// nombre aleatoire entre 0 et (n-1)</span>
+  <span class="k">return</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="nx">n</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">shuffle</span><span class="p">(</span><span class="nx">array</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// Fisher-Yates-Durstenfeld Shuffle</span>
+  <span class="kd">var</span> <span class="nx">shufArray</span> <span class="o">=</span> <span class="nx">array</span><span class="p">;</span>
+  <span class="kd">var</span> <span class="nx">lcv</span> <span class="o">=</span> <span class="nx">array</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span> <span class="c1">// Valeur de controle de la boucle</span>
+  <span class="kd">var</span> <span class="nx">n</span><span class="p">,</span> <span class="nx">nElem</span><span class="p">,</span> <span class="nx">lastElem</span><span class="p">;</span>
+  <span class="k">for</span> <span class="p">(;</span> <span class="nx">lcv</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">lcv</span><span class="o">--</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">n</span> <span class="o">=</span> <span class="nx">randomNumber</span><span class="p">(</span><span class="nx">lcv</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span> <span class="c1">// nb aleatoire entre 0 et lcv inclu</span>
+    <span class="nx">nElem</span> <span class="o">=</span> <span class="nx">shufArray</span><span class="p">[</span><span class="nx">n</span><span class="p">];</span> <span class="c1">// element a la position n</span>
+    <span class="nx">lastElem</span> <span class="o">=</span> <span class="nx">shufArray</span><span class="p">[</span><span class="nx">lcv</span><span class="p">];</span> <span class="c1">// Dernier element inchange</span>
+    <span class="nx">shufArray</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="nx">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">lastElem</span><span class="p">);</span> <span class="c1">// nElem --&gt; lastElem</span>
+    <span class="nx">shufArray</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="nx">lcv</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">nElem</span><span class="p">);</span> <span class="c1">// lastElem --&gt; nElem</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="nx">shufArray</span><span class="p">;</span> <span class="c1">// renvoie l&#39;array melange</span>
+<span class="p">}</span>
+</code></pre></div>
+  </div>
+</div>
+
+<p>Le Fisher-Yates-Durstenfeld Shuffle a grandement amélioré le côté aléatoire de la génération de mes grilles de Sudoku,  ce qui a par conséquent également réduit le temps moyen nécessaire pour réarranger correctement les nombres d'une ligne lorsque le premier mène a une impasse.</p>
+
+<h5>Code Final</h5>
+
+<p>Voici mon code final pour cette première étape. Gardez encore une fois à l'esprit qu'il ne s'agit ici que d'un de mes tous premiers exercices de JavaScript (et de code de manière générale) et que le résultat est par conséquent loin d'être parfait. Evidemment conseils et remarques sont bienvenus.</p>
+
+<div class="spoiler">
+  <button class="spoilTrigger" onclick="spoiler()">Afficher code (JavaScript)</button>
+  <div class="spoilContent">
+<div class="highlight"><pre><code class="javascript"><span class="kd">var</span> <span class="nx">sudoku</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;sudoku&#39;</span><span class="p">);</span>
+
+<span class="nx">reset</span><span class="p">();</span>
+
+<span class="kd">function</span> <span class="nx">randomNumber</span><span class="p">(</span><span class="nx">n</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// nb aleatoire entre 0 et (n-1)</span>
+  <span class="k">return</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="nx">n</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">shuffle</span><span class="p">(</span><span class="nx">array</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// Fisher-Yates-Durstenfeld Shuffle</span>
+  <span class="kd">var</span> <span class="nx">shufArray</span> <span class="o">=</span> <span class="nx">array</span><span class="p">;</span>
+  <span class="kd">var</span> <span class="nx">lcv</span> <span class="o">=</span> <span class="nx">array</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span> <span class="c1">// loop control value</span>
+  <span class="kd">var</span> <span class="nx">n</span><span class="p">,</span> <span class="nx">nElem</span><span class="p">,</span> <span class="nx">lastElem</span><span class="p">;</span> <span class="c1">// lastElem == Dernier element inchange</span>
+  <span class="k">for</span> <span class="p">(;</span> <span class="nx">lcv</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">lcv</span><span class="o">--</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">n</span> <span class="o">=</span> <span class="nx">randomNumber</span><span class="p">(</span><span class="nx">lcv</span> <span class="o">+</span> <span class="mi">1</span><span class="p">);</span>
+    <span class="nx">nElem</span> <span class="o">=</span> <span class="nx">shufArray</span><span class="p">[</span><span class="nx">n</span><span class="p">];</span>
+    <span class="nx">lastElem</span> <span class="o">=</span> <span class="nx">shufArray</span><span class="p">[</span><span class="nx">lcv</span><span class="p">];</span>
+    <span class="nx">shufArray</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="nx">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">lastElem</span><span class="p">);</span>
+    <span class="nx">shufArray</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="nx">lcv</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">nElem</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="nx">shufArray</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">sudokuTable</span><span class="p">(</span><span class="nx">n</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">sudoku</span><span class="p">.</span><span class="nx">className</span> <span class="o">=</span> <span class="s1">&#39;sudoku n&#39;</span> <span class="o">+</span> <span class="nx">n</span><span class="p">;</span>
+  <span class="nx">sudoku</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+  <span class="kd">var</span> <span class="nx">baseP</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">pow</span><span class="p">(</span><span class="nx">n</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">y</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">y</span> <span class="o">&lt;</span> <span class="nx">baseP</span><span class="p">;</span> <span class="nx">y</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">row</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s1">&#39;tr&#39;</span><span class="p">);</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">x</span> <span class="o">&lt;</span> <span class="nx">baseP</span><span class="p">;</span> <span class="nx">x</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">cell</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s1">&#39;td&#39;</span><span class="p">);</span>
+      <span class="nx">row</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">cell</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="nx">sudoku</span><span class="p">.</span><span class="nx">appendChild</span><span class="p">(</span><span class="nx">row</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">sudokuFill</span><span class="p">(</span><span class="nx">base</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">rows</span> <span class="o">=</span> <span class="nx">sudoku</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;tr&#39;</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">baseP</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">pow</span><span class="p">(</span><span class="nx">base</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">retries</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="kd">var</span> <span class="nx">maxRetries</span> <span class="o">=</span> <span class="mi">3</span> <span class="o">*</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">pow</span><span class="p">(</span><span class="nx">base</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
+
+  <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">y</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">y</span> <span class="o">&lt;</span> <span class="nx">baseP</span><span class="p">;</span> <span class="nx">y</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// pour chaque ligne</span>
+
+    <span class="k">do</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">row</span> <span class="o">=</span> <span class="nx">rows</span><span class="p">[</span><span class="nx">y</span><span class="p">];</span>
+      <span class="kd">var</span> <span class="nx">rowCells</span> <span class="o">=</span> <span class="nx">row</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;td&#39;</span><span class="p">);</span>
+
+      <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">x</span> <span class="o">&lt;</span> <span class="nx">baseP</span><span class="p">;</span> <span class="nx">x</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// pour chaque colonne</span>
+        <span class="kd">var</span> <span class="nx">cell</span> <span class="o">=</span> <span class="nx">rowCells</span><span class="p">[</span><span class="nx">x</span><span class="p">];</span>
+
+        <span class="kd">var</span> <span class="nx">nbArray</span> <span class="o">=</span> <span class="p">[];</span> <span class="c1">// array de 1 a n^2</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;=</span> <span class="nx">baseP</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span> <span class="nx">nbArray</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">i</span><span class="p">);</span> <span class="p">}</span>
+        <span class="nx">nbArray</span> <span class="o">=</span> <span class="nx">shuffle</span><span class="p">(</span><span class="nx">nbArray</span><span class="p">);</span>
+
+        <span class="kd">var</span> <span class="nx">nbFilled</span> <span class="o">=</span> <span class="p">[];</span> <span class="c1">// Nombres deja dans ligne, colonne ou bloc</span>
+
+        <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">j</span> <span class="o">&lt;</span> <span class="nx">baseP</span><span class="p">;</span> <span class="nx">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// for chaque cellule de la ligne</span>
+          <span class="kd">var</span> <span class="nx">sCellContent</span> <span class="o">=</span> <span class="nb">Number</span><span class="p">(</span><span class="nx">rowCells</span><span class="p">[</span><span class="nx">j</span><span class="p">].</span><span class="nx">innerHTML</span><span class="p">);</span>
+          <span class="k">if</span> <span class="p">(</span><span class="nx">sCellContent</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">nbFilled</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">sCellContent</span><span class="p">);</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="k">for</span> <span class="p">(</span><span class="nx">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">j</span> <span class="o">&lt;</span> <span class="nx">baseP</span><span class="p">;</span> <span class="nx">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// pour chaque cellule de la colonne</span>
+          <span class="kd">var</span> <span class="nx">searchCell</span> <span class="o">=</span> <span class="nx">rows</span><span class="p">[</span><span class="nx">j</span><span class="p">].</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;td&#39;</span><span class="p">)[</span><span class="nx">x</span><span class="p">];</span>
+          <span class="nx">sCellContent</span> <span class="o">=</span> <span class="nb">Number</span><span class="p">(</span><span class="nx">searchCell</span><span class="p">.</span><span class="nx">innerHTML</span><span class="p">);</span>
+          <span class="k">if</span> <span class="p">(</span><span class="nx">sCellContent</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">nbFilled</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">sCellContent</span><span class="p">);</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="kd">var</span> <span class="nx">block</span> <span class="o">=</span> <span class="nx">sudokuBlock</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">,</span> <span class="nx">base</span><span class="p">);</span>
+        <span class="kd">var</span> <span class="nx">xMin</span> <span class="o">=</span> <span class="nx">base</span> <span class="o">*</span> <span class="nx">block</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span> <span class="kd">var</span> <span class="nx">xMax</span> <span class="o">=</span> <span class="nx">xMin</span> <span class="o">+</span> <span class="nx">base</span><span class="p">;</span>
+        <span class="kd">var</span> <span class="nx">yMin</span> <span class="o">=</span> <span class="nx">base</span> <span class="o">*</span> <span class="nx">block</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span> <span class="kd">var</span> <span class="nx">yMax</span> <span class="o">=</span> <span class="nx">yMin</span> <span class="o">+</span> <span class="nx">base</span><span class="p">;</span>
+        <span class="k">for</span> <span class="p">(</span><span class="nx">j</span> <span class="o">=</span> <span class="nx">xMin</span><span class="p">;</span> <span class="nx">j</span> <span class="o">&lt;</span> <span class="nx">xMax</span><span class="p">;</span> <span class="nx">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// pour chaque cellule du bloc</span>
+          <span class="k">if</span> <span class="p">(</span><span class="nx">j</span> <span class="o">==</span> <span class="nx">x</span><span class="p">)</span> <span class="p">{</span> <span class="k">continue</span> <span class="p">}</span>
+          <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">k</span> <span class="o">=</span> <span class="nx">yMin</span><span class="p">;</span> <span class="nx">k</span> <span class="o">&lt;</span> <span class="nx">yMax</span><span class="p">;</span> <span class="nx">k</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">k</span> <span class="o">==</span> <span class="nx">y</span><span class="p">)</span> <span class="p">{</span> <span class="k">continue</span> <span class="p">}</span>
+            <span class="nx">searchCell</span> <span class="o">=</span> <span class="nx">rows</span><span class="p">[</span><span class="nx">k</span><span class="p">].</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;td&#39;</span><span class="p">)[</span><span class="nx">j</span><span class="p">];</span>
+            <span class="nx">sCellContent</span> <span class="o">=</span> <span class="nb">Number</span><span class="p">(</span><span class="nx">searchCell</span><span class="p">.</span><span class="nx">innerHTML</span><span class="p">);</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">sCellContent</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+              <span class="nx">nbFilled</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">sCellContent</span><span class="p">);</span>
+            <span class="p">}</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+        
+        <span class="k">do</span> <span class="p">{</span> <span class="kd">var</span> <span class="nx">nb</span> <span class="o">=</span> <span class="nx">nbArray</span><span class="p">.</span><span class="nx">shift</span><span class="p">();</span> <span class="p">}</span>
+        <span class="k">while</span> <span class="p">(</span><span class="nx">nbFilled</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">nb</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">);</span>
+        <span class="nx">cell</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">nb</span><span class="p">;</span>
+      <span class="p">}</span>
+
+      <span class="kd">var</span> <span class="nx">errors</span> <span class="o">=</span>  <span class="mi">0</span><span class="p">;</span>
+      <span class="k">for</span> <span class="p">(</span><span class="nx">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">j</span> <span class="o">&lt;</span> <span class="nx">baseP</span><span class="p">;</span> <span class="nx">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">searchCell</span> <span class="o">=</span> <span class="nx">rowCells</span><span class="p">[</span><span class="nx">j</span><span class="p">];</span>
+        <span class="nx">sCellContent</span> <span class="o">=</span> <span class="nx">searchCell</span><span class="p">.</span><span class="nx">innerHTML</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">sCellContent</span> <span class="o">==</span> <span class="s1">&#39;undefined&#39;</span><span class="p">)</span> <span class="p">{</span> <span class="nx">errors</span><span class="o">++</span><span class="p">;</span> <span class="p">}</span>
+      <span class="p">}</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="nx">errors</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="p">(</span><span class="nx">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">j</span> <span class="o">&lt;</span> <span class="nx">baseP</span><span class="p">;</span> <span class="nx">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">cell</span> <span class="o">=</span> <span class="nx">rowCells</span><span class="p">[</span><span class="nx">j</span><span class="p">];</span>
+          <span class="nx">cell</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="nx">retries</span><span class="o">++</span><span class="p">;</span>
+      <span class="p">}</span>
+
+      <span class="k">if</span> <span class="p">(</span><span class="nx">retries</span> <span class="o">&gt;=</span> <span class="nx">maxRetries</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="p">(</span><span class="nx">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">j</span> <span class="o">&lt;</span> <span class="nx">baseP</span><span class="p">;</span> <span class="nx">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+          <span class="k">for</span> <span class="p">(</span><span class="nx">k</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">k</span> <span class="o">&lt;</span> <span class="nx">baseP</span><span class="p">;</span> <span class="nx">k</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">var</span> <span class="nx">resetCell</span> <span class="o">=</span> <span class="nx">rows</span><span class="p">[</span><span class="nx">k</span><span class="p">].</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;td&#39;</span><span class="p">)[</span><span class="nx">j</span><span class="p">];</span>
+            <span class="nx">resetCell</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span>
+          <span class="p">}</span>
+        <span class="p">}</span>
+        <span class="nx">retries</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">y</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="p">}</span>
+
+    <span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="nx">errors</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">sudokuBlock</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">,</span> <span class="nx">n</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">xBlock</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nx">x</span> <span class="o">/</span> <span class="nx">n</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">yBlock</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nx">y</span> <span class="o">/</span> <span class="nx">n</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">block</span> <span class="o">=</span> <span class="p">[</span><span class="nx">xBlock</span><span class="p">,</span> <span class="nx">yBlock</span><span class="p">];</span>
+  <span class="k">return</span> <span class="nx">block</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">reset</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">base</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;base&#39;</span><span class="p">).</span><span class="nx">value</span><span class="p">;</span>
+  <span class="nx">base</span> <span class="o">=</span> <span class="nb">Number</span><span class="p">(</span><span class="nx">base</span><span class="p">);</span>
+  <span class="nx">sudokuTable</span><span class="p">(</span><span class="nx">base</span><span class="p">);</span>
+  <span class="nx">sudokuFill</span><span class="p">(</span><span class="nx">base</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+  </div>
+</div>
+
+</div>
+    
+
+
+  <div id="disqus_thread"></div>
+  <script>
+    var disqus_config = function () {
+      this.page.url = 'http://hironak.fr/sudoku-etape-1';
+      this.page.identifier = 'hironak00005'; 
+    };
+    (function() { // DON'T EDIT BELOW THIS LINE
+      var d = document, s = d.createElement('script');
+      s.src = 'https://hironak.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+                                
+</div>
+
+<footer>
+  Hironak.fr est mis à votre disposition selon les termes de la <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/fr/">Licence Creative Commons Attribution -  Partage dans les Mêmes Conditions 3.0 France</a>.
+  <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/fr/"><img  class="license" alt="Licence Creative Commons" src="http://i.creativecommons.org/l/by-sa/3.0/fr/80x15.png" /></a>
+  <br>
+  <a href="/about">- À propos de Hironak.fr -</a>
+</footer>
+
+<script id="dsq-count-scr" src="//hironak.disqus.com/count.js" async></script>
+</body>
+</html>
