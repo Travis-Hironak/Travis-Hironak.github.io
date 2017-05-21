@@ -1,6 +1,6 @@
 var sudoku = document.getElementById('sudoku');
 
-reset();
+sudokuBase();
 
 function randomNumber(n) { // random number from 0 to (n-1)
   return Math.floor(Math.random() * n);
@@ -34,88 +34,89 @@ function sudokuTable(n) {
   }
 }
 
-function sudokuFill(base) {
-  var rows = sudoku.getElementsByTagName('tr');
+function sudokuGenerate(base) {
   var baseP = Math.pow(base, 2);
+  var sudokuArray = [];
   var retries = 0;
-  var maxRetries = 3 * Math.pow(base, 3);
+  var maxRetries = Math.pow(baseP, 2);
 
   for (var y = 0; y < baseP; y++) { // for each row
+    sudokuArray.push([]);
 
-    do {
-      var row = rows[y];
-      var rowCells = row.getElementsByTagName('td');
+    for (var x = 0; x < baseP; x++) { // for each cell in the row
 
-      for (var x = 0; x < baseP; x++) { // for each cell (column)
-        var cell = rowCells[x];
+      var nbArray = []; // array 1 to n²
+      for (var i = 1; i <= baseP; i++) { nbArray.push(i); }
+      nbArray = shuffle(nbArray);
 
-        var nbArray = []; // Array 1 to n²
-        for (var i = 1; i <= baseP; i++) { nbArray.push(i); }
-        nbArray = shuffle(nbArray);
+      var nbFilled = [];
+      var row = sudokuArray[y];
+      var rowLength = row.length;
 
-        var nbFilled = []; // Numbers already in row, column or block
-
-        for (var j = 0; j < baseP; j++) { // for each cell in the row
-          var sCellContent = Number(rowCells[j].innerHTML);
-          if (sCellContent > 0) {
-            nbFilled.push(sCellContent);
-          }
-        }
-
-        for (j = 0; j < baseP; j++) { // for each cell in the column
-          var searchCell = rows[j].getElementsByTagName('td')[x];
-          sCellContent = Number(searchCell.innerHTML);
-          if (sCellContent > 0) {
-            nbFilled.push(sCellContent);
-          }
-        }
-
-        var block = sudokuBlock(x, y, base);
-        var xMin = base * block[0]; var xMax = xMin + base;
-        var yMin = base * block[1]; var yMax = yMin + base;
-        for (j = xMin; j < xMax; j++) { // for each cell in the block
-          if (j == x) { continue }
-          for (var k = yMin; k < yMax; k++) {
-            if (k == y) { continue }
-            searchCell = rows[k].getElementsByTagName('td')[j];
-            sCellContent = Number(searchCell.innerHTML);
-            if (sCellContent > 0) {
-              nbFilled.push(sCellContent);
-            }
-          }
-        }
-        
-        do { var nb = nbArray.shift(); }    // changes nb (next number)
-        while (nbFilled.indexOf(nb) != -1); // as long as nb has a duplicate
-        cell.innerHTML = nb;
+      for (i = 0; i < rowLength; i++) { // adds every number in the row
+        nbFilled.push(row[i]);
       }
 
-      var errors =  0;
-      for (j = 0; j < baseP; j++) {
-        searchCell = rowCells[j];
-        sCellContent = searchCell.innerHTML;
-        if (sCellContent == 'undefined') { errors++; }
+      for (i = 0; i < y; i++) {  // adds every number in the column
+        row = sudokuArray[i];
+        nbFilled.push(row[x]);
       }
 
-      if (errors > 0) {
-        for (j = 0; j < baseP; j++) {
-          cell = rowCells[j];
-          cell.innerHTML = '';
+      var block = sudokuBlock(x, y, base);
+      var xMin = base * block[0]; var xMax = xMin + base;
+      var yMin = base * block[1]; var yMax = yMin + base;
+
+      for (var j = yMin; j < yMax; j++) { // adds every number in the block
+        if (j == y) {continue;}
+        row = sudokuArray[j];
+        if (row === undefined) {break;}
+        for (i = xMin; i < xMax; i++) {
+          if (i == x) {continue;}
+          nbFilled.push(row[i]);
         }
-        retries++;
       }
 
-      if (retries >= maxRetries) {
-        for (j = 0; j < baseP; j++) {
-          for (k = 0; k < baseP; k++) {
-            var resetCell = rows[k].getElementsByTagName('td')[j];
-            resetCell.innerHTML = '';
-          }
+      do {
+        var nb = nbArray.shift(); // next number until no duplicates
+      } while (nbFilled.indexOf(nb) != -1)
+
+      row = sudokuArray[y];
+
+      if (nb != undefined) {
+        row.push(nb); // Adds nb to the current row  
+      } else {
+        if (retries < maxRetries) {
+          sudokuArray[y] = [];
+          x = -1;
+          retries++;
+        } else {
+          sudokuArray = [];
+          sudokuArray.push([]);
+          y = 0;
+          x = -1;
+          retries = 0;
         }
-        retries = 0; x = 0; y = 0;
       }
+    }
+  }
 
-    } while (errors > 0);
+  return sudokuArray;
+}
+
+function sudokuFill(base) {
+  var sudokuGrid = sudokuGenerate(base);
+  var baseP = Math.pow(base, 2);
+  var tableRows = sudoku.getElementsByTagName('tr');
+
+  for (var y = 0; y < baseP; y++) {
+    var row = sudokuGrid[y];
+    var tableRow = tableRows[y];
+    var tableCells = tableRow.getElementsByTagName('td');
+
+    for (var x = 0; x < baseP; x++) {
+      cell = tableCells[x];
+      cell.innerHTML = row[x];
+    }
   }
 }
 
@@ -126,9 +127,21 @@ function sudokuBlock(x, y, n) {
   return block;
 }
 
-function reset() {
-  var base = document.getElementById('base').value;
-  base = Number(base);
+function reset(base) {
   sudokuTable(base);
   sudokuFill(base);
+}
+
+function sudokuBase() {
+  var base = document.getElementById('base').value;
+  base = Number(base);
+  switch (base) {
+    case 2:
+    case 3:
+    case 4:
+      reset(base);
+      break;
+    default:
+      window.alert('La base doit être 2, 3 ou 4.');
+  }
 }
