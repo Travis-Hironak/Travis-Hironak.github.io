@@ -19,6 +19,7 @@
 <header>
   <nav class="navbar">
     <div id="headerIcons">
+      <a href="https://github.com/Travis-Hironak"><div id="github"></div></a>
       <a href="https://twitter.com/Travis_Hironak"><div id="twitter"></div></a>
       <a href="http://www.youtube.com/user/TravisHironak"><div id="youtube"></div></a>
     </div>
@@ -64,7 +65,7 @@
 
 <p>Pour la petite anecdote, l'idée m'est venue en jouant à Mass Effect Andromeda. Les puzzles que l'on rencontre au cours du jeu sont une simple variante du Sudoku. Les différences étant l'utilisation de symboles au lieu de chiffres, et le nombre de cases réduit (4x4 et 5x5 au lieu de 9x9). Il est donc fort probable que je crée quelque-chose de similaire lorsque mon algorithme de génération de Sudoku sera complet.</p>
 
-<p>Je vais détailler ci-dessous ma démarche pour la génération de grilles complètes. A noter qu'il était important pour moi de créer quelque-chose de facilement modifiable et acceptant une base de 2 à 4. Tout étant au carré avec le Sudoku (en tout cas dans sa forme classique), cela donne des grilles de 4x4, 9x9 et 16x16. Garder également à l'esprit qu'il s'agit ici encore de mes balbutiements en Javascript et que le résultat est par conséquent loin d'être optimisé.</p>
+<p>Je vais détailler ci-dessous ma démarche pour la génération de grilles complètes. A noter qu'il était important pour moi de créer quelque-chose de facilement modifiable et acceptant une base de 2 à 4. Tout étant au carré avec le Sudoku (en tout cas dans sa forme classique), cela donne des grilles de 4x4, 9x9 et 16x16. Gardez également à l'esprit qu'il s'agit ici encore de mes balbutiements en Javascript et que le résultat est par conséquent loin d'être vraiment optimisé.</p>
 
 <h5 class="indent">Génération du tableau</h5>
 
@@ -132,7 +133,7 @@
 
 <p>Ici, les choses se compliquent déjà car il y a pas mal de conditions à respecter. Premièrement, on veut générer une grille aléatoire, il faut donc s'assurer qu'elle sera quasiment toujours différente et que les grilles, même si différentes, ne suivent pas un pattern similaire. Ensuite il faut bien entendu respecter les règles du Sudoku, c'est à dire que chaque numéro ne peut apparaitre qu'une fois par ligne, par colonne et par bloc.</p>
 
-<p>La méthode que j'ai employée consiste à remplir la grille de gauche à droite et de haut en bas avec un nombre aléatoire, tout en vérifiant qu'il n'est pas déjà présent dans la ligne, la colonne ou le bloc. Pour cela, je créée une boucle qui se répète pour chaque ligne, au sein de laquelle se trouve une autre boucle pour chaque cellule/colonne afin d'effectuer la même opération pour toutes les cases du Sudoku.</p>
+<p>La méthode que j'ai employée consiste à remplir la grille de gauche à droite et de haut en bas avec un nombre aléatoire, tout en vérifiant qu'il n'est pas déjà présent dans la ligne, la colonne ou le bloc. Pour cela, je crée une boucle qui se répète pour chaque ligne, au sein de laquelle se trouve une autre boucle pour chaque cellule/colonne afin d'effectuer la même opération pour toutes les cases du Sudoku.</p>
 
 <p>Pour cette opération, je crée un <a href="https://www.w3schools.com/js/js_arrays.asp">array</a> <b>nbArray</b> contenant les nombres de 1 à n² (avec n = base) que je mélange ensuite. Je crée également un array <b>nbFilled</b> auquel j'ajoute tous les nombres déjà présents dans la ligne, la colonne et le bloc. Il ne me reste plus qu'à comparer les deux arrays pour déterminer les nombres compatibles avec la cellule actuelle.</p>
 
@@ -156,7 +157,7 @@
 
       <span class="kd">var</span> <span class="nx">nbArray</span> <span class="o">=</span> <span class="p">[];</span> <span class="c1">// Array 1 a n^2</span>
       <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;=</span> <span class="nx">baseP</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span> <span class="nx">nbArray</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">i</span><span class="p">);</span> <span class="p">}</span>
-      <span class="nx">nbArray</span><span class="p">.</span><span class="nx">sort</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">){</span><span class="k">return</span> <span class="mf">0.5</span> <span class="o">-</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()});</span> <span class="c1">// melanges</span>
+      <span class="nx">nbArray</span><span class="p">.</span><span class="nx">sort</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">){</span><span class="k">return</span> <span class="mf">0.5</span> <span class="o">-</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()});</span> <span class="c1">// melange</span>
 
       <span class="kd">var</span> <span class="nx">nbFilled</span> <span class="o">=</span> <span class="p">[];</span> <span class="c1">// Nombres deja dans ligne, colonne ou bloc</span>
 
@@ -280,9 +281,9 @@
 
 <h5 class="indent">Un meilleur réarrangement aléatoire</h5>
 
-<p>Avec ce code il est possible de générer une grille de sudoku pleine en un temps satisfaisant (pour un novice). Cependant j'ai rapidement remarqué que la première méthode que j'ai utilisé pour réarranger aléatoirement mon array est loin de donner des résultats acceptable. En effet <code>array.sort(function(a, b){return 0.5 - Math.random()});</code> n'est pas si random, la grande partie du temps les nombres 7, 8 et 9 sont les trois derniers de la première ligne sur un Sudoku en base 3. J'ai donc effectué quelques recherches pour trouver une méthode donnant des résultats convenables sans avoir trop d'impact sur le temps de réarrangement.</p>
+<p>Avec ce code il est possible de générer une grille de sudoku pleine en un temps satisfaisant (pour un novice). Cependant j'ai rapidement remarqué que la première méthode que j'ai utilisé pour réarranger aléatoirement mon array est loin de donner des résultats acceptables. En effet <code>array.sort(function(a, b){return 0.5 - Math.random()});</code> n'est pas si random, la grande partie du temps les nombres 7, 8 et 9 sont les trois derniers de la première ligne sur un Sudoku en base 3. J'ai donc effectué quelques recherches pour trouver une méthode donnant des résultats convenables sans avoir trop d'impact sur le temps de réarrangement.</p>
 
-<p>La même méthode était mentionné sur toutes les pages que j'ai consulté : il s'agit du <a href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle">Fisher-Yates Shuffle</a>, et plus particulièrement la <a href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle#The_modern_algorithm">version moderne</a> implémentée par Durstenfeld. J'ai mis le lien de la page Wikipédia en anglais car la page française est extrèmement limitée.</p>
+<p>La même méthode était mentionné sur toutes les pages que j'ai consulté : il s'agit du <a href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle">Fisher-Yates Shuffle</a>, et plus particulièrement la <a href="https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle#The_modern_algorithm">version moderne</a> implémentée par Durstenfeld. J'ai mis le lien de la page Wikipédia en anglais car la page en français est très limitée.</p>
 
 <p>Voici mon implémentation en JavaScript :</p>
 
@@ -316,9 +317,9 @@
 
 J'ai essayé d'optimiser un peu mon code pour limiter le nombre d'opérations et surtout éviter de toucher au DOM (Document Object Model) inutilement. En effet interagir (accès, création, suppression, modification) avec les éléments de la page est relativement lent, il est donc préférable de ne le faire que lorsque cela est vraiment nécessaire.</p>
 
-<p>Auparavant chaque cellule de la grille de Sudoku était remplie une à une, en allant vérifer dans les autres cellules les nombres déjà présents. Ceci était pratique lors de ma première écriture du code car cela me permettait voir la grille se remplir étape par étape et donc de débugger plus facilement. Cependant cela augmentait grandement le nombre de lectures et de modifications du DOM et donc l'exécution du code dans son ensemble.</p>
+<p>Auparavant chaque cellule de la grille de Sudoku était remplie une à une, en allant vérifier les nombres déjà présents dans les autres cellules. Cette méthode était pratique lors de ma première écriture du code car elle me permettait voir la grille se remplir étape par étape et donc de débugger plus facilement. Cependant cela augmentait grandement le nombre de lectures et de modifications du DOM et donc l'exécution du code dans son ensemble.</p>
 
-<p>J'ai réécrit la fonction <code>sudokuFill()</code>, que j'ai séparée en deux étapes. Premièrement la génération de la grille complète uniquement dans des arrays cette fois-ci. Puis le remplissage du tableau une fois la grille complète. La méthode de génération en elle-même n'a pas changé.</p>
+<p>J'ai réécrit la fonction <code>sudokuFill()</code>, que j'ai séparée en deux étapes. Premièrement l'arrangement des nombres (uniquement dans des arrays cette fois-ci, et donc sans toucher au DOM), puis le remplissage du tableau sur la page. La méthode de génération en elle-même n'a pas changé.</p>
 
 <div class="spoiler">
   <button class="spoilTrigger" onclick="spoiler()">Afficher code (JavaScript)</button>
@@ -416,7 +417,7 @@ J'ai essayé d'optimiser un peu mon code pour limiter le nombre d'opérations et
 
 <p>Afin d'éviter les problèmes liés à une base non appropriée (nombre non entier ou trop élevé par exemple) il était nécessaire de la valider avant l'exécution du code. Le nombre d'entrées acceptées étant faible, j'ai choisi d'utiliser un switch.</p>
 
-<p>Je commence par récupérer la valeur dans le champ avec l'ID base, puis je le convertie en nombre pour être sûr qu'il ne soit pas considéré comme une chaîne de caractères. J'utilise alors mon switch avec la valeur obtenue, si elle bonne j'appelle ma fonction reset(), dans le cas contraire j'alerte l'utilisateur que la valeur est incorrecte.</p>
+<p>Je commence par récupérer la valeur du champ avec l'ID <code>base</code>, puis je la convertie en nombre pour être sûr qu'elle ne soit pas considérée comme une chaîne de caractères. J'utilise alors mon switch avec la valeur obtenue, s'il s'agit d'une des valeurs attendues j'appelle ma fonction <code>reset()</code>, dans le cas contraire j'alerte l'utilisateur que la valeur est incorrecte.</p>
 
 <div class="spoiler">
   <button class="spoilTrigger" onclick="spoiler()">Afficher code (JavaScript)</button>
@@ -605,7 +606,7 @@ J'ai essayé d'optimiser un peu mon code pour limiter le nombre d'opérations et
   <div id="disqus_thread"></div>
   <script>
     var disqus_config = function () {
-      this.page.url = 'http://hironak.fr/sudoku-etape-1';
+      this.page.url = 'http://hironak.fr/article/sudoku-etape-1';
       this.page.identifier = 'hironak00005'; 
     };
     (function() { // DON'T EDIT BELOW THIS LINE
