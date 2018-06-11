@@ -16,7 +16,7 @@
 
 <body class="noColumn">
 
-<header>
+<header id="mainHeader">
   <nav class="navbar">
     <div id="headerIcons">
       <a href="https://github.com/Travis-Hironak"><div id="github"></div></a>
@@ -29,6 +29,8 @@
 
 <main>
   <link rel="stylesheet" href="/css/pushbox.css">
+
+<div id="pbText">Poussez une boite dans chaque trou !</div>
 
 <canvas id="pushbox" width="600" height="600"></canvas>
 <canvas id="mfd" width="600" height="200"></canvas>
@@ -55,13 +57,23 @@
   </div>
 </div>
 
+<div class="hidden">
+  <img src="/assets/pushbox/arrowUp.png" alt="arrowUp" id="arrowUp">
+  <img src="/assets/pushbox/arrowDown.png" alt="arrowDown" id="arrowDown">
+  <img src="/assets/pushbox/arrowLeft.png" alt="arrowLeft" id="arrowLeft">
+  <img src="/assets/pushbox/arrowRight.png" alt="arrowRight" id="arrowRight">
+  <img src="/assets/pushbox/editor.png" alt="editor" id="editor">
+  <img src="/assets/pushbox/leaveEditor.png" alt="leaveEditor" id="leaveEditor">
+  <img src="/assets/pushbox/smile.png" alt="smile" id="smile"
+</div>
+
 <script src="/js/pushbox/tileTypes.js"></script>
 <script src="/js/pushbox/levels.js"></script>
 <script src="/js/pushbox/pushbox.js"></script>
 
 </main>
 
-<footer>
+<footer id="mainFooter">
   <a href="/about">- À propos de Hironak.fr -</a>
   <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/fr/"><img  class="license" alt="Licence Creative Commons" src="http://i.creativecommons.org/l/by-sa/3.0/fr/80x15.png" /></a>
 </footer>

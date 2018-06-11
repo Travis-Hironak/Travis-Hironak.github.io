@@ -4,6 +4,7 @@ var mfd = document.getElementById('mfd');
 var mfdc = mfd.getContext('2d');
 
 var levelInput;
+var levelId;
 var level = {};
 var tiles = [];
 var charPos = {};
@@ -27,15 +28,34 @@ function canvasSize(id, x, y) {
   canvas.height = y;
 }
 
+// Change text above pushbox
+function pbText() {
+  var pbText = document.getElementById('pbText');
+  var maxLevel = levels.length - 1;
+  if (finished === true)  {
+    if (levelId === maxLevel) {
+      pbText.innerHTML = 'Bravo, vous avez terminé le dernier niveau !'
+    } else {
+      pbText.innerHTML = 'Appuyez sur Entrée pour passer au prochain niveau.'
+    }
+  } 
+  else {
+    pbText.innerHTML = 'Poussez une boite dans chaque trou !';
+  }
+}
+
 // Reset pushbox / change level
 function pbReset() {
   document.getElementById('moves').innerHTML = 0;
   document.getElementById('moves').classList.remove('good');
   moves = 0;
   finished = false;
+  pbText();
   levelInput = document.getElementById('levelInput').value;
   document.getElementById('level').innerHTML = levelInput;
+  levelId = Number(levelInput);
   level = levels[levelInput];
+  setTileSize();
   canvasSize('pushbox', level.width * tileSize, level.height * tileSize);
   tiles = JSON.parse(JSON.stringify(level.tiles)); // copy without ref
   drawTiles();
@@ -68,17 +88,33 @@ function drawTiles() {
   }
 }
 
+var character = {
+  bgColor: '#d90',
+  borderColor: 'black'
+};
 
 // Draw character (while playing level)
 function drawCharacter(tileX, tileY) {
-  pbc.fillStyle = '#d90';
+  pbc.fillStyle = character.bgColor;
   var x = tileSize * tileX + tileSize / 2;
   var y = tileSize * tileY + tileSize / 2;
   pbc.beginPath();
   pbc.arc(x, y, charSize / 2, 0, 2 * Math.PI);
   pbc.fill();
-  pbc.strokeStyle = 'black';
+  pbc.strokeStyle = character.borderColor;
   pbc.stroke();
+  if (finished === true) {
+    var img = document.getElementById('smile');
+    x -= charSize / 2;
+    y -= charSize / 2;
+    if (document.readyState === 'complete') {
+      pbc.drawImage(img, x, y, charSize, charSize);
+    } else {
+      img.onload = function() {
+        pbc.drawImage(img, x, y, charSize, charSize);
+      }
+    }
+  }
 }
 
 // Draw start position (while editing level)
@@ -149,7 +185,9 @@ function move(x, y) {
 
 function victory() {
   finished = true;
+  pbText();
   document.getElementById('moves').classList.add('good');
+  changeLevel(levelId + 1);
 }
 
 // Changing level
@@ -199,7 +237,7 @@ window.onkeydown = function(event) {
     case 34: // PageDown
       changeLevel(previousLevel);
       break;
-    case 8:  // Backspace
+    case 13: // Enter
     case 82: // R
       pbReset();
   }
@@ -217,15 +255,30 @@ function Button(config) {
   this.bgColor = config.bgColor || '#666';
   this.borderWidth = config.borderWidth || 1;
   this.borderColor = config.borderColor || '#333';
+  this.imgId = config.imgId || '';
 }
 // Button draw method
 Button.prototype.draw = function() {
   mfdc.fillStyle = this.borderColor;
-  mfdc.fillRect(this.x, this.y, this.width, this.height);
+  mfdc.fillRect(this.x, this.y, this.width, this.width);
   mfdc.fillStyle = this.bgColor;
   mfdc.fillRect(this.x + this.borderWidth, this.y + this.borderWidth,
                 this.width - 2 * this.borderWidth, 
-                this.height - 2 * this.borderWidth);
+                this.width - 2 * this.borderWidth);
+  if (this.imgId !== '') {
+    var img = document.getElementById(this.imgId);
+    var x = this.x;
+    var y = this.y;
+    var width = this.width;
+    var height = this.height;
+    if (document.readyState === 'complete') {
+      mfdc.drawImage(img, x, y, width, width);
+    } else {
+      img.onload = function() {
+        mfdc.drawImage(img, x, y, width, width);
+      }
+    }
+  }
 }
 // onButton method (checks if the mouse is on the button)
 Button.prototype.onButton = function(mouseX, mouseY) {
@@ -254,12 +307,12 @@ var mfdState = 'controls';
 
 
 mfdStart.draw = function() {
-  mfdc.fillStyle = "#d90";
+  mfdc.fillStyle = character.bgColor;
   mfdc.beginPath();
   mfdc.arc(this.x + this.width / 2, this.y + this.width / 2, 
-          this.width * 0.5, 0, 2 * Math.PI);
+          this.width / 2, 0, 2 * Math.PI);
   mfdc.fill();
-  mfdc.strokeStyle = 'black';
+  mfdc.strokeStyle = character.borderColor;
   mfdc.stroke();
 };
 
@@ -280,25 +333,34 @@ function drawMFD() {
   btnSize = tileSize / 2;
   btnX = mfdCanvas.width - btnSize * 3/2;
   btnY = btnSize / 2;
+  mfdSwitch.width = btnSize;
   mfdSwitch.x = btnX;
   mfdSwitch.y = btnY;
-  mfdSwitch.draw();
   // MFD Controls
   if (mfdState === 'controls') {
     // Arrow buttons properties
+    up.width = btnSize;
     up.x = mfdCenter.x + up.width * -1/2;
-    up.y = mfdCenter.y + up.height * -3/2;
+    up.y = mfdCenter.y + up.width * -3/2;
+    up.imgId = 'arrowUp';
+    down.width = btnSize;
     down.x = mfdCenter.x + down.width * -1/2;
-    down.y = mfdCenter.y + down.height * 1/2;
+    down.y = mfdCenter.y + down.width * 1/2;
+    down.imgId = 'arrowDown';
+    left.width = btnSize;
     left.x = mfdCenter.x + left.width * -3/2;
-    left.y = mfdCenter.y + left.height * -1/2;
+    left.y = mfdCenter.y + left.width * -1/2;
+    left.imgId = 'arrowLeft';
+    right.width = btnSize;
     right.x = mfdCenter.x + right.width * 1/2;
-    right.y = mfdCenter.y + right.height * -1/2;
+    right.y = mfdCenter.y + right.width * -1/2;
+    right.imgId = 'arrowRight';
     // Draw arrow buttons
     up.draw();
     down.draw();
     left.draw();
     right.draw();
+    mfdSwitch.imgId = "editor";
   }
   // MFD Editor
   else if (mfdState === 'editor') {
@@ -316,7 +378,6 @@ function drawMFD() {
     ground.x = space + 0 * (size + space);
     ground.y = mfdCanvas.height / 2;
     ground.width = size;
-    ground.height = ground.width;
     ground.bgColor = tileTypes.ground.color;
     ground.borderWidth = tileTypes.ground.borderWidth * size;
     ground.borderColor = tileTypes.ground.borderColor;
@@ -324,7 +385,6 @@ function drawMFD() {
     wall.x = space + 1 * (size + space);
     wall.y = mfdCanvas.height / 2;
     wall.width = size;
-    wall.height = wall.width;
     wall.bgColor = tileTypes.wall.color;
     wall.borderWidth = tileTypes.wall.borderWidth * size;
     wall.borderColor = tileTypes.wall.borderColor;
@@ -332,7 +392,6 @@ function drawMFD() {
     hole.x = space + 2 * (size + space);
     hole.y = mfdCanvas.height / 2;
     hole.width = size;
-    hole.height = hole.width;
     hole.bgColor = tileTypes.hole.color;
     hole.borderWidth = tileTypes.hole.borderWidth * size;
     hole.borderColor = tileTypes.hole.borderColor;
@@ -340,7 +399,6 @@ function drawMFD() {
     box.x = space + 3 * (size + space);
     box.y = mfdCanvas.height / 2;
     box.width = size;
-    box.height = box.width;
     box.bgColor = tileTypes.box.color;
     box.borderWidth = tileTypes.box.borderWidth * size;
     box.borderColor = tileTypes.box.borderColor;
@@ -349,7 +407,9 @@ function drawMFD() {
     wall.draw();
     hole.draw();
     box.draw();
+    mfdSwitch.imgId = "leaveEditor";
   }
+  mfdSwitch.draw();
 }
 
 // When clicking mfdSwitch
@@ -483,6 +543,29 @@ function mfdClick(event) {
     else if (hole.onButton(x, y)) {editorTileType = 'hole'}
     else if (box.onButton(x, y)) {editorTileType = 'box'}
   }
+}
+
+// Adjust tile size according to window size
+function setTileSize() {
+  var header = document.getElementById('mainHeader');
+  var navbar = header.getElementsByClassName('navbar')[0];
+  var headerHeight = navbar.clientHeight;
+  
+  var w = window.innerWidth;
+  var h = window.innerHeight - headerHeight * 4;
+
+  var tileW = Math.floor(w / (level.width * 10)) * 10;
+  var tileH = Math.floor(h / ((level.height + 2)* 10)) * 10;
+
+  if (tileW < tileH) {tileSize = tileW}
+  else {tileSize = tileH}
+  if (tileSize > 60) {tileSize = 60}
+  charSize = tileSize * 0.8;
+}
+
+// Reset when changing window size
+window.onresize = function() {
+  pbReset();
 }
 
 pbReset();

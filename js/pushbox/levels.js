@@ -23,6 +23,18 @@ var levels = [
     start: {x: 1, y: 1}
   },
   {
+    width: 6,
+    height: 5,
+    tiles:[
+      ["wall", "ground", "ground", "wall", "ground", "ground"],
+      ["ground", "ground", "box", "wall", "box", "ground"],
+      ["hole", "ground", "hole", "box", "ground", "hole"],
+      ["ground", "box", "box", "hole", "wall", "wall"],
+      ["wall", "ground", "hole", "ground", "box", "hole"]
+    ],
+    start: {x: 1, y: 1}
+  },
+  {
     width: 9,
     height: 5,
     tiles:[
