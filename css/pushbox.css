@@ -1,1 +1,1 @@
-#pbText{position:absolute;top:-3rem;width:100%;text-align:center}#pushbox,#mfd{display:block;margin:0 auto}#levelInfo{margin-top:1em;text-align:center}#moves,#level{margin-right:2em;font-weight:700}
+#pbInfo{position:relative;margin:0 auto;margin-bottom:1rem;text-align:center}#helpButton{margin:0;margin-left:2rem}#pushbox,#mfd{display:block;margin:0 auto}#mfd{margin-top:2px}#levelInfo{margin-top:1em;text-align:center}#moves,#level{margin-right:1em;font-weight:700}

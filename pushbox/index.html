@@ -30,7 +30,10 @@
 <main>
   <link rel="stylesheet" href="/css/pushbox.css">
 
-<div id="pbText">Poussez une boite dans chaque trou !</div>
+<div id="pbInfo">
+  <span id="pbText">Poussez une boite dans chaque trou !</span>
+  <button id="helpButton" onclick="help()">Aide</button>
+</div>
 
 <canvas id="pushbox" width="600" height="600"></canvas>
 <canvas id="mfd" width="600" height="200"></canvas>
@@ -41,9 +44,28 @@
   <span id="level">1</span>
   <span>Déplacements : </span>
   <span id="moves">0</span>
-  <span>Niveau :</span>
+  <span>Niv. suivant :</span>
   <input id="levelInput" type="number"></input>
   <button id="reset" onclick="pbReset()">Jouer</button>
+</div>
+
+<div id="help" class="overlay" onclick="this.classList.remove('visible')">
+  <div class="window info">
+    <h6>Contrôles :</h6>
+    <ul>
+      <li><b>ZQSD</b> / <b>WASD</b> / &uarr;&larr;&darr;&rarr; pour se déplacer</li>
+      <li><b>R</b> pour recommencer le niveau</li>
+      <li><b>Page préc.</b> / <b>Page suiv.</b> pour changer de niveau</li>
+      <li><b>Entrée</b> pour valider le niveau choisi</li>
+    </ul>
+    <br>
+    <h6>Infos :</h6>
+    <ul>
+      <li>Il n'est pas possible de marcher dans les trous.</li>
+      <li>Il est possible de marcher sur les boites qui sont dans<br> 
+        un trou ou de pousser une autre boite par dessus.</li>
+    </ul>
+  </div>
 </div>
 
 <div id="gridSize" class="overlay">
@@ -54,6 +76,7 @@
     <input id="gridY" type="number" min="4" max="12" value="4"></input>
     <button id="keepLevel" onclick="levelEditor('keep')">Modifier niveau actuel</button>
     <button id="newLevel" onclick="levelEditor('new')">Nouveau niveau</button>
+    <button id="cancel" onclick="cancel()">Annuler</button>
   </div>
 </div>
 

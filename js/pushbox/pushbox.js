@@ -44,6 +44,15 @@ function pbText() {
   }
 }
 
+// Display help
+function help() {
+  document.getElementById('help').classList.add('visible');
+}
+
+function cancel() {
+  document.getElementById('gridSize').classList.remove('visible');
+}
+
 // Reset pushbox / change level
 function pbReset() {
   document.getElementById('moves').innerHTML = 0;
@@ -107,7 +116,7 @@ function drawCharacter(tileX, tileY) {
     var img = document.getElementById('smile');
     x -= charSize / 2;
     y -= charSize / 2;
-    if (document.readyState === 'complete') {
+    if (img.complete) {
       pbc.drawImage(img, x, y, charSize, charSize);
     } else {
       img.onload = function() {
@@ -238,7 +247,9 @@ window.onkeydown = function(event) {
       changeLevel(previousLevel);
       break;
     case 13: // Enter
+      pbReset(); 
     case 82: // R
+      document.getElementById('levelInput').value = levelId;
       pbReset();
   }
 }
@@ -271,7 +282,7 @@ Button.prototype.draw = function() {
     var y = this.y;
     var width = this.width;
     var height = this.height;
-    if (document.readyState === 'complete') {
+    if (img.complete) {
       mfdc.drawImage(img, x, y, width, width);
     } else {
       img.onload = function() {
@@ -322,13 +333,8 @@ function drawMFD() {
   mfdCanvas = {width: level.width * tileSize, height: tileSize * 2, border: 5};
   mfdCenter = {x: mfdCanvas.width / 2, y: mfdCanvas.height / 2};
   canvasSize('mfd', mfdCanvas.width, mfdCanvas.height);
-  // MFD background and borders
-  mfdc.fillStyle = '#333'; // Border
-  mfdc.fillRect(0, 0, mfdCanvas.width, mfdCanvas.height);
-  mfdc.fillStyle = '#2d211a'; // Background
-  mfdc.fillRect(mfdCanvas.border, mfdCanvas.border,
-                mfdCanvas.width - 2 * mfdCanvas.border, 
-                mfdCanvas.height - 2 * mfdCanvas.border);
+  // MFD background clear
+  mfdc.clearRect(0, 0, mfdCanvas.width, mfdCanvas.height);
   // draw mfdSwitch button
   btnSize = tileSize / 2;
   btnX = mfdCanvas.width - btnSize * 3/2;
@@ -336,6 +342,7 @@ function drawMFD() {
   mfdSwitch.width = btnSize;
   mfdSwitch.x = btnX;
   mfdSwitch.y = btnY;
+  btnSize = tileSize * 2/3;
   // MFD Controls
   if (mfdState === 'controls') {
     // Arrow buttons properties
@@ -368,6 +375,7 @@ function drawMFD() {
     var n = types.length;
     var size = tileSize * 2/3;
     var space = (mfdCanvas.width - size * n) / (n + 1);
+    btnSize = tileSize / 2;
     btnX = btnSize * 1/2;
     // create start button object and draw it
     mfdStart.x = btnX; 
@@ -415,7 +423,6 @@ function drawMFD() {
 // When clicking mfdSwitch
 function editorToggle() {
   if (mfdState === 'controls') { // Activate editor mode
-    mfdState = 'editor';
     document.getElementById('gridX').value = level.width;
     document.getElementById('gridY').value = level.height;
     document.getElementById('gridSize').classList.add('visible');
@@ -428,6 +435,7 @@ function editorToggle() {
 
 // When clicking 'keep level' or 'new level'
 function levelEditor(levelId) {
+  mfdState = 'editor';
   var newLevelWidth = Number(document.getElementById('gridX').value);
   var newLevelHeight = Number(document.getElementById('gridY').value);
   var newLevelTiles = [];
@@ -486,8 +494,8 @@ function levelEditor(levelId) {
     }
     level.width = newLevelWidth;
   }
-  console.log(level.tiles);
   tiles = JSON.parse(JSON.stringify(level.tiles)); // copy without ref
+  setTileSize();
   canvasSize('pushbox', level.width * tileSize, level.height * tileSize);
   drawTiles();
   drawMFD();
@@ -554,8 +562,8 @@ function setTileSize() {
   var w = window.innerWidth;
   var h = window.innerHeight - headerHeight * 4;
 
-  var tileW = Math.floor(w / (level.width * 10)) * 10;
-  var tileH = Math.floor(h / ((level.height + 2)* 10)) * 10;
+  var tileW = Math.floor(w / (level.width * 5)) * 5;
+  var tileH = Math.floor(h / ((level.height + 2)* 5)) * 5;
 
   if (tileW < tileH) {tileSize = tileW}
   else {tileSize = tileH}
