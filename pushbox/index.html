@@ -70,13 +70,35 @@
 
 <div id="gridSize" class="overlay">
   <div class="window info">
+    <h6>Editeur de niveau</h6>
     <b>Taille de grille :</b>  x =
     <input id="gridX" type="number" min="4" max="20" value="4"></input>
     , y = 
     <input id="gridY" type="number" min="4" max="12" value="4"></input>
-    <button id="keepLevel" onclick="levelEditor('keep')">Modifier niveau actuel</button>
-    <button id="newLevel" onclick="levelEditor('new')">Nouveau niveau</button>
-    <button id="cancel" onclick="cancel()">Annuler</button>
+    <button id="cancel" onclick="cancel('gridSize')">Annuler</button>
+    <button id="keepLevel" onclick="levelEditor(false)">Modifier niveau actuel</button>
+    <button id="newLevel" onclick="levelEditor(true)">Nouveau niveau</button>
+  </div>
+</div>
+
+<div id="resizeGrid" class="overlay">
+  <div class="window info">
+    <h6>Redimensionnement du niveau</h6>
+    <b>Taille de grille :</b>  x =
+    <input id="resizeX" type="number" min="4" max="20" value="4"></input>
+    , y = 
+    <input id="resizeY" type="number" min="4" max="12" value="4"></input>
+    <button id="cancel" onclick="cancel('resizeGrid')">Annuler</button>
+    <button id="resizeValidate" onclick="resizeLevel()">Valider</button>
+  </div>
+</div>
+
+<div id="pbSave" class="overlay">
+  <div class="window info">
+    <textarea id="levelObject"></textarea><br>
+    <button id="cancelSave" onclick="cancel('pbSave')">Retour</button>
+    <button id="loadLevel" onclick="loadLevel()">Charger</button>
+    <button id="copyLevel" onclick="copyLevel()">Copier</button>
   </div>
 </div>
 
@@ -87,6 +109,8 @@
   <img src="/assets/pushbox/arrowRight.png" alt="arrowRight" id="arrowRight">
   <img src="/assets/pushbox/editor.png" alt="editor" id="editor">
   <img src="/assets/pushbox/leaveEditor.png" alt="leaveEditor" id="leaveEditor">
+  <img src="/assets/pushbox/save.png" alt="save" id="save">
+  <img src="/assets/pushbox/resize.png" alt="resize" id="resize">
   <img src="/assets/pushbox/smile.png" alt="smile" id="smile"
 </div>
 

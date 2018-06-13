@@ -28,31 +28,6 @@ function canvasSize(id, x, y) {
   canvas.height = y;
 }
 
-// Change text above pushbox
-function pbText() {
-  var pbText = document.getElementById('pbText');
-  var maxLevel = levels.length - 1;
-  if (finished === true)  {
-    if (levelId === maxLevel) {
-      pbText.innerHTML = 'Bravo, vous avez terminé le dernier niveau !'
-    } else {
-      pbText.innerHTML = 'Appuyez sur Entrée pour passer au prochain niveau.'
-    }
-  } 
-  else {
-    pbText.innerHTML = 'Poussez une boite dans chaque trou !';
-  }
-}
-
-// Display help
-function help() {
-  document.getElementById('help').classList.add('visible');
-}
-
-function cancel() {
-  document.getElementById('gridSize').classList.remove('visible');
-}
-
 // Reset pushbox / change level
 function pbReset() {
   document.getElementById('moves').innerHTML = 0;
@@ -257,6 +232,8 @@ window.onkeydown = function(event) {
 var mfdCanvas = {};
 var mfdCenter = {};
 
+var selectedColor = '#893';
+
 // Button object type
 function Button(config) {
   this.width = config.width || tileSize / 2;
@@ -266,10 +243,15 @@ function Button(config) {
   this.bgColor = config.bgColor || '#666';
   this.borderWidth = config.borderWidth || 1;
   this.borderColor = config.borderColor || '#333';
+  this.selected = config.selected || false;
   this.imgId = config.imgId || '';
 }
 // Button draw method
 Button.prototype.draw = function() {
+  if (this.selected === true) {
+    mfdc.fillStyle = selectedColor;
+    mfdc.fillRect(this.x - 2, this.y - 2, this.width + 4, this.width + 4);
+  }
   mfdc.fillStyle = this.borderColor;
   mfdc.fillRect(this.x, this.y, this.width, this.width);
   mfdc.fillStyle = this.bgColor;
@@ -306,10 +288,12 @@ var down = new Button({});
 var left = new Button({});
 var right = new Button({});
 
+var mfdSave = new Button({});
+var mfdResize = new Button({});
 var mfdSwitch = new Button({});
 
 var mfdStart = new Button({});
-var ground = new Button({});
+var ground = new Button({selected: true});
 var wall = new Button({});
 var hole = new Button({});
 var box = new Button({});
@@ -318,6 +302,13 @@ var mfdState = 'controls';
 
 
 mfdStart.draw = function() {
+  if (this.selected === true) {
+    mfdc.fillStyle = selectedColor;
+    mfdc.beginPath();
+    mfdc.arc(this.x + this.width / 2, this.y + this.width / 2, 
+             this.width / 2 + 2, 0, 2 * Math.PI);
+    mfdc.fill();
+  }
   mfdc.fillStyle = character.bgColor;
   mfdc.beginPath();
   mfdc.arc(this.x + this.width / 2, this.y + this.width / 2, 
@@ -329,23 +320,36 @@ mfdStart.draw = function() {
 
 // Draw multifonction display (MFD)
 function drawMFD() {
-  var btnSize, btnX, btnY, btnColor, btnBorder, btnBorderColor;
+  var btnSize, btnX, btnY, btnSpace, btnColor, btnBorder, btnBorderColor;
   mfdCanvas = {width: level.width * tileSize, height: tileSize * 2, border: 5};
   mfdCenter = {x: mfdCanvas.width / 2, y: mfdCanvas.height / 2};
   canvasSize('mfd', mfdCanvas.width, mfdCanvas.height);
   // MFD background clear
   mfdc.clearRect(0, 0, mfdCanvas.width, mfdCanvas.height);
-  // draw mfdSwitch button
+  // mfdSwitch properties
   btnSize = tileSize / 2;
-  btnX = mfdCanvas.width - btnSize * 3/2;
+  btnSpace = btnSize / 2;
+  btnX = mfdCanvas.width - btnSize - btnSpace;
   btnY = btnSize / 2;
   mfdSwitch.width = btnSize;
   mfdSwitch.x = btnX;
   mfdSwitch.y = btnY;
-  btnSize = tileSize * 2/3;
+  // mfdResize properties
+  btnX = mfdCanvas.width - btnSize * 2 - btnSpace * 2;
+  mfdResize.width = btnSize;
+  mfdResize.x = btnX;
+  mfdResize.y = btnY;
+  mfdResize.imgId = 'resize';
+  // mfdSave properties
+  btnX = mfdCanvas.width - btnSize * 3 - btnSpace * 3;
+  mfdSave.width = btnSize;
+  mfdSave.x = btnX;
+  mfdSave.y = btnY;
+  mfdSave.imgId = 'save';
   // MFD Controls
   if (mfdState === 'controls') {
     // Arrow buttons properties
+    btnSize = tileSize * 2/3;
     up.width = btnSize;
     up.x = mfdCenter.x + up.width * -1/2;
     up.y = mfdCenter.y + up.width * -3/2;
@@ -415,6 +419,8 @@ function drawMFD() {
     wall.draw();
     hole.draw();
     box.draw();
+    mfdSave.draw();
+    mfdResize.draw();
     mfdSwitch.imgId = "leaveEditor";
   }
   mfdSwitch.draw();
@@ -433,14 +439,67 @@ function editorToggle() {
   drawMFD();
 }
 
+
+// Update tiles if smaller/larger level
+function resizeGrid(newLevelWidth, newLevelHeight) {
+  var i, j;
+  // Adjust height of level
+  if (newLevelHeight < level.height) {
+    for (j = newLevelHeight; j < level.height; j++) {
+      level.tiles.pop();
+    }
+  } 
+  else if (newLevelHeight > level.height) {
+    heightDiff = newLevelHeight - level.height;
+    for (j = level.height; j < newLevelHeight; j++) {
+      var newRow = [];
+      for (i = 0; i < level.width; i ++) {
+        newRow.push('ground');
+      }
+      level.tiles.push(newRow);
+    }
+  }
+  level.height = newLevelHeight;
+  // Adjust width of level
+  if (newLevelWidth < level.width) {
+    for (j = 0; j < level.height; j++) {
+      for (i = newLevelWidth; i < level.width; i++) {
+        level.tiles[j].pop();
+      }
+    }
+  }
+  else if (newLevelWidth > level.width) {
+    for (j = 0; j < level.height; j++) {
+      for (i = level.width; i < newLevelWidth; i++) {
+        level.tiles[j].push('ground');
+      }
+    }
+  }
+  level.width = newLevelWidth;
+}
+
+// When changing size of the current level
+function resizeLevel() {
+  var newLevelWidth = Number(document.getElementById('resizeX').value);
+  var newLevelHeight = Number(document.getElementById('resizeY').value);
+  resizeGrid(newLevelWidth, newLevelHeight);
+  tiles = JSON.parse(JSON.stringify(level.tiles)); // copy without ref
+  setTileSize();
+  canvasSize('pushbox', level.width * tileSize, level.height * tileSize);
+  drawTiles();
+  drawMFD();
+  drawStart(level.start.x, level.start.y);
+  document.getElementById('resizeGrid').classList.remove('visible');
+}
+
 // When clicking 'keep level' or 'new level'
-function levelEditor(levelId) {
+function levelEditor(levelNew) {
   mfdState = 'editor';
   var newLevelWidth = Number(document.getElementById('gridX').value);
   var newLevelHeight = Number(document.getElementById('gridY').value);
   var newLevelTiles = [];
   // Create new level
-  if (levelId === 'new') {
+  if (levelNew === true) {
     for (var j = 0; j < newLevelHeight; j++) {
       newLevelTiles.push([]);
       for (var i = 0; i < newLevelWidth; i++) {
@@ -457,42 +516,9 @@ function levelEditor(levelId) {
     level = levels[levels.length - 1];
     changeLevel(levels.length - 1);
   }
-  // Modify current level
-  else if (levelId === 'keep') {
-    var i, j;
-    // Adjust height of level
-    if (newLevelHeight < level.height) {
-      for (j = newLevelHeight; j < level.height; j++) {
-        level.tiles.pop();
-      }
-    } 
-    else if (newLevelHeight > level.height) {
-      heightDiff = newLevelHeight - level.height;
-      for (j = level.height; j < newLevelHeight; j++) {
-        var newRow = [];
-        for (i = 0; i < level.width; i ++) {
-          newRow.push('ground');
-        }
-        level.tiles.push(newRow);
-      }
-    }
-    level.height = newLevelHeight;
-    // Adjust width of level
-    if (newLevelWidth < level.width) {
-      for (j = 0; j < level.height; j++) {
-        for (i = newLevelWidth; i < level.width; i++) {
-          level.tiles[j].pop();
-        }
-      }
-    }
-    else if (newLevelWidth > level.width) {
-      for (j = 0; j < level.height; j++) {
-        for (i = level.width; i < newLevelWidth; i++) {
-          level.tiles[j].push('ground');
-        }
-      }
-    }
-    level.width = newLevelWidth;
+  // Modify current level (keep)
+  else if (levelNew === false) {
+    resizeGrid(newLevelWidth, newLevelHeight);
   }
   tiles = JSON.parse(JSON.stringify(level.tiles)); // copy without ref
   setTileSize();
@@ -545,11 +571,57 @@ function mfdClick(event) {
   }
   // Editor
   else if (mfdState === 'editor') {
-    if (mfdStart.onButton(x, y)) {editorTileType = 'start'}
-    else if (ground.onButton(x, y)) {editorTileType = 'ground'}
-    else if (wall.onButton(x, y)) {editorTileType = 'wall'}
-    else if (hole.onButton(x, y)) {editorTileType = 'hole'}
-    else if (box.onButton(x, y)) {editorTileType = 'box'}
+    if (mfdStart.onButton(x, y)) {
+      editorTileType = 'start';
+      mfdStart.selected = true;
+      ground.selected = false;
+      wall.selected = false;
+      hole.selected = false;
+      box.selected = false;
+    }
+    else if (ground.onButton(x, y)) {
+      editorTileType = 'ground';
+      mfdStart.selected = false;
+      ground.selected = true;
+      wall.selected = false;
+      hole.selected = false;
+      box.selected = false;
+    }
+    else if (wall.onButton(x, y)) {
+      editorTileType = 'wall';
+      mfdStart.selected = false;
+      ground.selected = false;
+      wall.selected = true;
+      hole.selected = false;
+      box.selected = false;
+    }
+    else if (hole.onButton(x, y)) {
+      editorTileType = 'hole';
+      mfdStart.selected = false;
+      ground.selected = false;
+      wall.selected = false;
+      hole.selected = true;
+      box.selected = false;
+    }
+    else if (box.onButton(x, y)) {
+      editorTileType = 'box';
+      mfdStart.selected = false;
+      ground.selected = false;
+      wall.selected = false;
+      hole.selected = false;
+      box.selected = true;
+    }
+    else if (mfdResize.onButton(x, y)) {
+      document.getElementById('resizeX').value = level.width;
+      document.getElementById('resizeY').value = level.height;
+      document.getElementById('resizeGrid').classList.add('visible');
+    }
+    else if (mfdSave.onButton(x, y)) {
+      document.getElementById('levelObject').value = JSON.stringify(level);
+      document.getElementById('pbSave').classList.add('visible');
+      document.getElementById('levelObject').select();
+    }
+    drawMFD();
   }
 }
 
@@ -562,8 +634,8 @@ function setTileSize() {
   var w = window.innerWidth;
   var h = window.innerHeight - headerHeight * 4;
 
-  var tileW = Math.floor(w / (level.width * 5)) * 5;
-  var tileH = Math.floor(h / ((level.height + 2)* 5)) * 5;
+  var tileW = Math.floor(w / level.width);
+  var tileH = Math.floor(h / (level.height + 2));
 
   if (tileW < tileH) {tileSize = tileW}
   else {tileSize = tileH}
@@ -574,6 +646,51 @@ function setTileSize() {
 // Reset when changing window size
 window.onresize = function() {
   pbReset();
+}
+
+// Change text above pushbox
+function pbText() {
+  var pbText = document.getElementById('pbText');
+  var maxLevel = levels.length - 1;
+  if (finished === true)  {
+    if (levelId === maxLevel) {
+      pbText.innerHTML = 'Bravo, vous avez terminé le dernier niveau !'
+    } else {
+      pbText.innerHTML = 'Appuyez sur Entrée pour passer au prochain niveau.'
+    }
+  } 
+  else {
+    pbText.innerHTML = 'Poussez une boite dans chaque trou !';
+  }
+}
+
+// Display help
+function help() {
+  document.getElementById('help').classList.add('visible');
+}
+
+// Cancel overlay
+function cancel(id) {
+  document.getElementById(id).classList.remove('visible');
+}
+
+// Copy level to clipboard
+function copyLevel() {
+  document.getElementById('levelObject').select();
+  document.execCommand('copy');
+}
+
+// Load level from textarea
+function loadLevel() {
+  var textarea = document.getElementById('levelObject');
+  var obj = JSON.parse(textarea.value);
+  level.width = obj.width;
+  level.height = obj.height;
+  level.tiles = obj.tiles;
+  level.start = obj.start;
+  tiles = JSON.parse(JSON.stringify(level.tiles)); // copy without ref
+  pbReset();
+  cancel('pbSave');
 }
 
 pbReset();
