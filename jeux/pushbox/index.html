@@ -34,18 +34,10 @@
   <button id="helpButton" onclick="help()">Aide</button>
 </div>
 
-<canvas id="pushbox" width="600" height="600"></canvas>
-<canvas id="mfd" width="600" height="200"></canvas>
-
-
-<div id="levelInfo">
-  <span>Niveau : </span>
-  <span id="level">1</span>
-  <span>Déplacements : </span>
-  <span id="moves">0</span>
-  <span>Niv. suivant :</span>
-  <input id="levelInput" type="number"></input>
-  <button id="reset" onclick="pbReset()">Jouer</button>
+<div id="pb">
+  <canvas id="pushbox" width="600" height="600"></canvas>
+  <canvas id="mfd" width="600" height="200"></canvas>
+  <div id="mfdTooltip" class="tooltip hidden">Test</div>
 </div>
 
 <div id="help" class="overlay" onclick="this.classList.remove('visible')">
@@ -54,7 +46,8 @@
     <ul>
       <li><b>ZQSD</b> / <b>WASD</b> / &uarr;&larr;&darr;&rarr; pour se déplacer</li>
       <li><b>R</b> pour recommencer le niveau</li>
-      <li><b>Page préc.</b> / <b>Page suiv.</b> pour changer de niveau</li>
+      <li><b>Page préc.</b> / <b>Page suiv.</b> pour changer de niveau (si le
+        <br> changement de niveau est déverrouillé)</li>
       <li><b>Entrée</b> pour valider le niveau choisi</li>
     </ul>
     <br>
@@ -67,6 +60,17 @@
   </div>
 </div>
 
+<div id="levelInfo">
+  <span>Niveau : </span>
+  <span id="level">1</span>
+  <span>Déplacements : </span>
+  <span id="moves">0</span>
+  <span id="nextLevel" class="hidden">Niv. suivant :
+    <input id="levelInput" type="number"></input>
+    <button id="reset" onclick="pbReset()">Jouer</button>
+  </span>
+</div>
+
 <div id="gridSize" class="overlay">
   <div class="window info">
     <h6>Editeur de niveau</h6>
@@ -75,8 +79,8 @@
     , y = 
     <input id="gridY" type="number" min="4" max="12" value="4"></input>
     <button id="cancel" onclick="cancel('gridSize')">Annuler</button>
-    <button id="keepLevel" onclick="levelEditor(false)">Modifier niveau actuel</button>
-    <button id="newLevel" onclick="levelEditor(true)">Nouveau niveau</button>
+    <button id="keepLevel" onclick="levelEditor(false); mfdHover(event);">Modifier niveau actuel</button>
+    <button id="newLevel" onclick="levelEditor(true); mfdHover(event);">Nouveau niveau</button>
   </div>
 </div>
 
@@ -106,6 +110,12 @@
   <img src="/assets/pushbox/arrowDown.png" alt="arrowDown" id="arrowDown">
   <img src="/assets/pushbox/arrowLeft.png" alt="arrowLeft" id="arrowLeft">
   <img src="/assets/pushbox/arrowRight.png" alt="arrowRight" id="arrowRight">
+
+  <img src="/assets/pushbox/resetImg.png" alt="resetImg" id="resetImg">
+  <img src="/assets/pushbox/unlock.png" alt="unlock" id="unlock">
+  <img src="/assets/pushbox/lock.png" alt="lock" id="lock">
+  <img src="/assets/pushbox/helpImg.png" alt="helpImg" id="helpImg">
+
   <img src="/assets/pushbox/editor.png" alt="editor" id="editor">
   <img src="/assets/pushbox/leaveEditor.png" alt="leaveEditor" id="leaveEditor">
   <img src="/assets/pushbox/save.png" alt="save" id="save">

@@ -3,13 +3,16 @@ var pbc = pushbox.getContext('2d');
 var mfd = document.getElementById('mfd');
 var mfdc = mfd.getContext('2d');
 
+var tooltip = document.getElementById('mfdTooltip');
+
 var levelInput;
-var levelId;
+var levelId = 1;
 var level = {};
 var tiles = [];
 var charPos = {};
 var moves = 0;
 var finished = false;
+var locked = true;
 
 var levelSelector = document.getElementById('levelInput');
 levelSelector.value = 1;
@@ -26,6 +29,18 @@ function canvasSize(id, x, y) {
   var canvas = document.getElementById(id);
   canvas.width = x;
   canvas.height = y;
+}
+
+// Unlocks level changing without finishing first
+function unlock() {
+  if (locked) {
+    locked = false;
+    document.getElementById('nextLevel').classList.remove('hidden');
+  } else {
+    locked = true;
+    document.getElementById('nextLevel').classList.add('hidden');
+  }
+  drawMFD();
 }
 
 // Reset pushbox / change level
@@ -176,12 +191,12 @@ function victory() {
 
 // Changing level
 function changeLevel(n) {
-  var currentLevel = Number(levelSelector.value);
+  var currentLevel = n;
   levelSelector.min = 1;
   levelSelector.max = levels.length - 1;
   var levelMin = Number(levelSelector.min);
   var levelMax = Number(levelSelector.max);
-  currentLevel = n;
+  levelSelector.value = n;
   if (currentLevel < levelMin) {
     currentLevel = levelMin;
   } else if (currentLevel > levelMax) {
@@ -216,10 +231,14 @@ window.onkeydown = function(event) {
       move(0, 1);
       break;
     case 33: // PageUp
-      changeLevel(nextLevel);
+      if (locked === false) {
+        changeLevel(nextLevel);
+      }
       break;
     case 34: // PageDown
-      changeLevel(previousLevel);
+      if (locked === false) {
+        changeLevel(previousLevel);
+      }
       break;
     case 13: // Enter
       pbReset(); 
@@ -245,6 +264,7 @@ function Button(config) {
   this.borderColor = config.borderColor || '#333';
   this.selected = config.selected || false;
   this.imgId = config.imgId || '';
+  this.tooltip = config.tooltip || '';
 }
 // Button draw method
 Button.prototype.draw = function() {
@@ -282,21 +302,55 @@ Button.prototype.onButton = function(mouseX, mouseY) {
     return true;
   }
 }
+// Hover method (displays tooltip)
+Button.prototype.hover = function() {
+  var mfdX = mfd.offsetLeft;
+  var mfdY = mfd.offsetTop;
+  tooltip.innerHTML = this.tooltip;
+  tooltip.classList.remove('hidden');
+  tooltip.style.left = (mfdX + this.x + this.width ) + 'px';
+  tooltip.style.top = (mfdY + this.y - this.width ) + 'px';
+}
+// Click method
+Button.prototype.click = function() {
+  mfdStart.selected = false;
+  ground.selected = false;
+  wall.selected = false;
+  hole.selected = false;
+  box.selected = false;
+  this.selected = true;
+}
 
 var up = new Button({});
 var down = new Button({});
 var left = new Button({});
 var right = new Button({});
+var controlsReset = new Button({
+  tooltip: 'Reset',
+  imgId: 'resetImg'
+});
+var controlsUnlock = new Button({});
+var controlsHelp = new Button({
+  tooltip: 'Aide',
+  imgId: 'helpImg'
+});
 
-var mfdSave = new Button({});
-var mfdResize = new Button({});
-var mfdSwitch = new Button({});
+var mfdSave = new Button({
+  tooltip: 'Charger/Partager',
+  imgId: 'save'
+});
+var mfdResize = new Button({
+  tooltip: 'Redimensionner niveau',
+  imgId: 'resize'
+});
 
-var mfdStart = new Button({});
-var ground = new Button({selected: true});
-var wall = new Button({});
-var hole = new Button({});
-var box = new Button({});
+var mfdSwitch = new Button({tooltip: 'Editeur de niveau'});
+
+var mfdStart = new Button({tooltip: 'Départ'});
+var ground = new Button({tooltip: 'Sol', selected: true});
+var wall = new Button({tooltip: 'Mur'});
+var hole = new Button({tooltip: 'Trou'});
+var box = new Button({tooltip: 'Boite'});
 
 var mfdState = 'controls';
 
@@ -321,7 +375,7 @@ mfdStart.draw = function() {
 // Draw multifonction display (MFD)
 function drawMFD() {
   var btnSize, btnX, btnY, btnSpace, btnColor, btnBorder, btnBorderColor;
-  mfdCanvas = {width: level.width * tileSize, height: tileSize * 2, border: 5};
+  mfdCanvas = {width: level.width * tileSize, height: tileSize * 2};
   mfdCenter = {x: mfdCanvas.width / 2, y: mfdCanvas.height / 2};
   canvasSize('mfd', mfdCanvas.width, mfdCanvas.height);
   // MFD background clear
@@ -339,13 +393,35 @@ function drawMFD() {
   mfdResize.width = btnSize;
   mfdResize.x = btnX;
   mfdResize.y = btnY;
-  mfdResize.imgId = 'resize';
   // mfdSave properties
   btnX = mfdCanvas.width - btnSize * 3 - btnSpace * 3;
   mfdSave.width = btnSize;
   mfdSave.x = btnX;
   mfdSave.y = btnY;
-  mfdSave.imgId = 'save';
+  // Reset button properties
+  btnX = btnSize / 2;
+  controlsReset.width = btnSize;
+  controlsReset.x = btnX;
+  controlsReset.y = btnY;
+  // Unlock button properties
+  btnX = btnSize / 2;
+  btnY = 2 * btnSize / 2 + 2 * btnSpace;
+  controlsUnlock.width = btnSize;
+  controlsUnlock.x = btnX;
+  controlsUnlock.y = btnY;
+  if (locked) {
+    controlsUnlock.tooltip = 'Changement de niveau verrouilé';
+    controlsUnlock.imgId = 'unlock';
+  } else {
+    controlsUnlock.tooltip = 'Changement de niveau déverouillé';
+    controlsUnlock.imgId = 'lock';
+  }
+  // Help button properties
+  btnX = mfdCanvas.width - btnSize - btnSpace;
+  btnY = 2 * btnSize / 2 + 2 * btnSpace;
+  controlsHelp.width = btnSize;
+  controlsHelp.x = btnX;
+  controlsHelp.y = btnY;
   // MFD Controls
   if (mfdState === 'controls') {
     // Arrow buttons properties
@@ -366,55 +442,59 @@ function drawMFD() {
     right.x = mfdCenter.x + right.width * 1/2;
     right.y = mfdCenter.y + right.width * -1/2;
     right.imgId = 'arrowRight';
-    // Draw arrow buttons
+    // Draw controls buttons
     up.draw();
     down.draw();
     left.draw();
     right.draw();
+    controlsReset.draw();
+    controlsUnlock.draw();
+    controlsHelp.draw();
     mfdSwitch.imgId = "editor";
   }
   // MFD Editor
   else if (mfdState === 'editor') {
     var types = ['ground', 'wall', 'hole', 'box'];
     var n = types.length;
-    var size = tileSize * 2/3;
-    var space = (mfdCanvas.width - size * n) / (n + 1);
+    var tileButtonSize = tileSize * 2/3;
+    var space = (mfdCanvas.width - tileButtonSize * n) / (n + 1);
     btnSize = tileSize / 2;
     btnX = btnSize * 1/2;
-    // create start button object and draw it
+    btnY = btnSize / 2;
+    // start properties
     mfdStart.x = btnX; 
     mfdStart.y = btnY;
     mfdStart.width = btnSize;
-    mfdStart.draw()
     // ground properties
-    ground.x = space + 0 * (size + space);
+    ground.x = space + 0 * (tileButtonSize + space);
     ground.y = mfdCanvas.height / 2;
-    ground.width = size;
+    ground.width = tileButtonSize;
     ground.bgColor = tileTypes.ground.color;
-    ground.borderWidth = tileTypes.ground.borderWidth * size;
+    ground.borderWidth = tileTypes.ground.borderWidth * tileButtonSize;
     ground.borderColor = tileTypes.ground.borderColor;
     // wall properties
-    wall.x = space + 1 * (size + space);
+    wall.x = space + 1 * (tileButtonSize + space);
     wall.y = mfdCanvas.height / 2;
-    wall.width = size;
+    wall.width = tileButtonSize;
     wall.bgColor = tileTypes.wall.color;
-    wall.borderWidth = tileTypes.wall.borderWidth * size;
+    wall.borderWidth = tileTypes.wall.borderWidth * tileButtonSize;
     wall.borderColor = tileTypes.wall.borderColor;
     // hole properties
-    hole.x = space + 2 * (size + space);
+    hole.x = space + 2 * (tileButtonSize + space);
     hole.y = mfdCanvas.height / 2;
-    hole.width = size;
+    hole.width = tileButtonSize;
     hole.bgColor = tileTypes.hole.color;
-    hole.borderWidth = tileTypes.hole.borderWidth * size;
+    hole.borderWidth = tileTypes.hole.borderWidth * tileButtonSize;
     hole.borderColor = tileTypes.hole.borderColor;
     // box properties
-    box.x = space + 3 * (size + space);
+    box.x = space + 3 * (tileButtonSize + space);
     box.y = mfdCanvas.height / 2;
-    box.width = size;
+    box.width = tileButtonSize;
     box.bgColor = tileTypes.box.color;
-    box.borderWidth = tileTypes.box.borderWidth * size;
+    box.borderWidth = tileTypes.box.borderWidth * tileButtonSize;
     box.borderColor = tileTypes.box.borderColor;
     // draw tile buttons
+    mfdStart.draw()
     ground.draw();
     wall.draw();
     hole.draw();
@@ -561,55 +641,49 @@ function mfdClick(event) {
   var x = event.offsetX;
   var y = event.offsetY;
   // Switch between controls and editor
-  if (mfdSwitch.onButton(x, y)) {editorToggle();}
+  if (mfdSwitch.onButton(x, y)) {
+    editorToggle();
+    mfdHover(event);
+  }
   // Controls
   else if (mfdState === 'controls') {
     if (up.onButton(x, y)) {move(0, -1);}
     else if (down.onButton(x, y)) {move(0, 1);}
     else if (left.onButton(x, y)) {move(-1, 0);}
     else if (right.onButton(x, y)) {move(1, 0);}
+    else if (controlsReset.onButton(x, y)) {
+      document.getElementById('levelInput').value = levelId;
+      pbReset();
+    }
+    else if (controlsUnlock.onButton(x, y)) {
+      unlock();
+      mfdHover(event);
+    }
+    else if (controlsHelp.onButton(x, y)) {
+      help();
+    }
   }
   // Editor
   else if (mfdState === 'editor') {
     if (mfdStart.onButton(x, y)) {
       editorTileType = 'start';
-      mfdStart.selected = true;
-      ground.selected = false;
-      wall.selected = false;
-      hole.selected = false;
-      box.selected = false;
+      mfdStart.click();
     }
     else if (ground.onButton(x, y)) {
       editorTileType = 'ground';
-      mfdStart.selected = false;
-      ground.selected = true;
-      wall.selected = false;
-      hole.selected = false;
-      box.selected = false;
+      ground.click();
     }
     else if (wall.onButton(x, y)) {
       editorTileType = 'wall';
-      mfdStart.selected = false;
-      ground.selected = false;
-      wall.selected = true;
-      hole.selected = false;
-      box.selected = false;
+      wall.click();
     }
     else if (hole.onButton(x, y)) {
       editorTileType = 'hole';
-      mfdStart.selected = false;
-      ground.selected = false;
-      wall.selected = false;
-      hole.selected = true;
-      box.selected = false;
+      hole.click();
     }
     else if (box.onButton(x, y)) {
       editorTileType = 'box';
-      mfdStart.selected = false;
-      ground.selected = false;
-      wall.selected = false;
-      hole.selected = false;
-      box.selected = true;
+      box.click();
     }
     else if (mfdResize.onButton(x, y)) {
       document.getElementById('resizeX').value = level.width;
@@ -622,6 +696,54 @@ function mfdClick(event) {
       document.getElementById('levelObject').select();
     }
     drawMFD();
+  }
+}
+
+mfd.addEventListener('mousemove', mfdHover);
+// Mouse tooltip
+function mfdHover(event) {
+  var x = event.offsetX;
+  var y = event.offsetY;
+  tooltip.classList.add('hidden');
+  tooltip.innerHTML = '';
+  if (mfdState === 'controls') {
+    mfdSwitch.tooltip = 'Editeur de niveau'
+    if (controlsHelp.onButton(x, y)) {
+      controlsHelp.hover();
+    }
+    else if (controlsReset.onButton(x, y)) {
+      controlsReset.hover();
+    }
+    else if (controlsUnlock.onButton(x, y)) {
+      controlsUnlock.hover();
+    }
+  } else if (mfdState === 'editor') {
+    mfdSwitch.tooltip = "Quitter l'éditeur";
+    if (mfdResize.onButton(x, y)) {
+      mfdResize.hover();
+    }
+    else if (mfdSave.onButton(x, y)) {
+      mfdSave.hover();
+    }
+    else if (mfdStart.onButton(x, y)) {
+      mfdStart.hover();
+    }
+    else if (ground.onButton(x, y)) {
+      ground.hover();
+    }
+    else if (wall.onButton(x, y)) {
+      wall.hover();
+    }
+    else if (hole.onButton(x, y)) {
+      hole.hover();
+    }
+    else if (box.onButton(x, y)) {
+      box.hover();
+    }
+
+  }
+  if (mfdSwitch.onButton(x, y)) {
+    mfdSwitch.hover();
   }
 }
 
@@ -654,12 +776,15 @@ function pbText() {
   var maxLevel = levels.length - 1;
   if (finished === true)  {
     if (levelId === maxLevel) {
+      pbText.classList.add('good');
       pbText.innerHTML = 'Bravo, vous avez terminé le dernier niveau !'
     } else {
+      pbText.classList.add('good');
       pbText.innerHTML = 'Appuyez sur Entrée pour passer au prochain niveau.'
     }
   } 
   else {
+    pbText.classList.remove('good');
     pbText.innerHTML = 'Poussez une boite dans chaque trou !';
   }
 }
