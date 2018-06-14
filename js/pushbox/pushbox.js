@@ -610,13 +610,18 @@ function levelEditor(levelNew) {
 }
 
 
-// When clicking on pushbox
 pushbox.addEventListener('click', pbClick);
 // Prevent text selection on multiple clicks
 pushbox.addEventListener('mousedown', function(e){e.preventDefault();}, false);
 
+// When clicking on the pushbox level
 function pbClick(event) {
-  if (mfdState === 'editor') {
+  if (mfdState === 'controls') {
+    if (finished) {
+      pbReset();
+    }
+  }
+  else if (mfdState === 'editor') {
     var tileX = Math.floor(event.offsetX / tileSize);
     var tileY = Math.floor(event.offsetY / tileSize);
     if (editorTileType === 'start') {
@@ -780,7 +785,7 @@ function pbText() {
       pbText.innerHTML = 'Bravo, vous avez terminé le dernier niveau !'
     } else {
       pbText.classList.add('good');
-      pbText.innerHTML = 'Appuyez sur Entrée pour passer au prochain niveau.'
+      pbText.innerHTML = 'Appuyez sur Entrée ou cliquez sur le niveau pour passer au prochain.'
     }
   } 
   else {
