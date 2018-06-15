@@ -313,12 +313,7 @@ Button.prototype.hover = function() {
 }
 // Click method
 Button.prototype.click = function() {
-  mfdStart.selected = false;
-  ground.selected = false;
-  wall.selected = false;
-  hole.selected = false;
-  box.selected = false;
-  this.selected = true;
+  window.navigator.vibrate(10);
 }
 
 var up = new Button({});
@@ -652,10 +647,22 @@ function mfdClick(event) {
   }
   // Controls
   else if (mfdState === 'controls') {
-    if (up.onButton(x, y)) {move(0, -1);}
-    else if (down.onButton(x, y)) {move(0, 1);}
-    else if (left.onButton(x, y)) {move(-1, 0);}
-    else if (right.onButton(x, y)) {move(1, 0);}
+    if (up.onButton(x, y)) {
+      move(0, -1);
+      Button.prototype.click();
+    }
+    else if (down.onButton(x, y)) {
+      move(0, 1);
+      Button.prototype.click();
+    }
+    else if (left.onButton(x, y)) {
+      move(-1, 0);
+      Button.prototype.click();
+    }
+    else if (right.onButton(x, y)) {
+      move(1, 0);
+      Button.prototype.click();
+    }
     else if (controlsReset.onButton(x, y)) {
       document.getElementById('levelInput').value = levelId;
       pbReset();
@@ -672,23 +679,48 @@ function mfdClick(event) {
   else if (mfdState === 'editor') {
     if (mfdStart.onButton(x, y)) {
       editorTileType = 'start';
-      mfdStart.click();
+      mfdStart.selected = true;
+      ground.selected = false;
+      wall.selected = false;
+      hole.selected = false;
+      box.selected = false;
+      // mfdStart.click();
     }
     else if (ground.onButton(x, y)) {
       editorTileType = 'ground';
-      ground.click();
+      mfdStart.selected = false;
+      ground.selected = true;
+      wall.selected = false;
+      hole.selected = false;
+      box.selected = false;
+      // ground.click();
     }
     else if (wall.onButton(x, y)) {
       editorTileType = 'wall';
-      wall.click();
+      mfdStart.selected = false;
+      ground.selected = false;
+      wall.selected = true;
+      hole.selected = false;
+      box.selected = false;
+      // wall.click();
     }
     else if (hole.onButton(x, y)) {
       editorTileType = 'hole';
-      hole.click();
+      mfdStart.selected = false;
+      ground.selected = false;
+      wall.selected = false;
+      hole.selected = true;
+      box.selected = false;
+      // hole.click();
     }
     else if (box.onButton(x, y)) {
       editorTileType = 'box';
-      box.click();
+      mfdStart.selected = false;
+      ground.selected = false;
+      wall.selected = false;
+      hole.selected = false;
+      box.selected = true;
+      // box.click();
     }
     else if (mfdResize.onButton(x, y)) {
       document.getElementById('resizeX').value = level.width;
