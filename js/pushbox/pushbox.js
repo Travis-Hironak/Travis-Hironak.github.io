@@ -1,3 +1,7 @@
+/*
+------ Global Variables ------
+*/
+
 var pushbox = document.getElementById('pushbox');
 var pbc = pushbox.getContext('2d');
 var mfd = document.getElementById('mfd');
@@ -5,33 +9,163 @@ var mfdc = mfd.getContext('2d');
 
 var tooltip = document.getElementById('mfdTooltip');
 
-var levelInput;
-var levelId = 1;
-var level = {};
-var tiles = [];
-var charPos = {};
-var moves = 0;
-var finished = false;
-var locked = true;
+var levelId = 1; // Current level
+var moves = 0; // Number of moves since start of game
+var finished = false; // Is the current level over?
+var locked = true; // Is the level selection locked?
 
+var level = {}; // Current level object
+var tiles = []; // Current tiles
+var charPos = {}; // Current character position
+
+var levelInput;
 var levelSelector = document.getElementById('levelInput');
 levelSelector.value = 1;
 levelSelector.min = 1;
 levelSelector.max = levels.length - 1;
 
-var tileSize = 60;
-var charSize = tileSize * 0.8;
+var tileSize = 60; // Tile size, gets changed by setTileSize
 
-var tileType;
-var editorTileType = 'ground';
+var btnSize = 40;
+var arrowBtnSize = 50;
+var tileBtnSize = 50;
+var btnSpace = btnSize / 2;
 
+var char = { // Properties of the character
+  size: tileSize * 0.8,
+  bgColor: '#d90',
+  borderColor: 'black'
+};
+
+var mfdCanvas = {};
+var mfdCenter = {};
+
+var mfdState = 'controls'; // name of the MFD display
+var tileType; // type of the tile clicked 
+var editorTileType = 'ground'; // tile type selected in editor
+var selectedColor = '#893'; // highlighting color of selected tile type
+
+/*
+------ Object Contructor & Methods ------
+*/
+
+// Button object type
+function Button(config) {
+  this.width = config.width || tileSize / 2;
+  this.height = config.height || this.width;
+  this.x = config.x || 0;
+  this.y = config.y || 0;
+  this.bgColor = config.bgColor || '#666';
+  this.borderWidth = config.borderWidth || 1;
+  this.borderColor = config.borderColor || '#333';
+  this.selected = config.selected || false;
+  this.imgId = config.imgId || '';
+  this.tooltip = config.tooltip || '';
+}
+// Button draw method
+Button.prototype.draw = function() {
+  if (this.selected === true) {
+    mfdc.fillStyle = selectedColor;
+    mfdc.fillRect(this.x - 2, this.y - 2, this.width + 4, this.width + 4);
+  }
+  mfdc.fillStyle = this.borderColor;
+  mfdc.fillRect(this.x, this.y, this.width, this.width);
+  mfdc.fillStyle = this.bgColor;
+  mfdc.fillRect(this.x + this.borderWidth, this.y + this.borderWidth,
+                this.width - 2 * this.borderWidth, 
+                this.width - 2 * this.borderWidth);
+  if (this.imgId !== '') {
+    var img = document.getElementById(this.imgId);
+    var x = this.x;
+    var y = this.y;
+    var width = this.width;
+    var height = this.height;
+    if (img.complete) {
+      mfdc.drawImage(img, x, y, width, width);
+    } else {
+      img.onload = function() {
+        mfdc.drawImage(img, x, y, width, width);
+      }
+    }
+  }
+}
+// onButton method (checks if the mouse is on the button)
+Button.prototype.onButton = function(mouseX, mouseY) {
+  if (mouseX >= this.x && 
+      mouseX < this.x + this.width && 
+      mouseY >= this.y && 
+      mouseY < this.y + this.width) {
+    return true;
+  }
+}
+// Hover method (displays tooltip)
+Button.prototype.hover = function() {
+  var mfdX = mfd.offsetLeft;
+  var mfdY = mfd.offsetTop;
+  tooltip.innerHTML = this.tooltip;
+  tooltip.classList.remove('hidden');
+  tooltip.style.left = (mfdX + this.x + this.width ) + 'px';
+  tooltip.style.top = (mfdY + this.y - this.width ) + 'px';
+}
+// Click method
+Button.prototype.click = function() {
+  window.navigator.vibrate(10);
+}
+
+/*
+------ Button declarations & properties ------
+*/
+
+var up = new Button({});
+var down = new Button({});
+var left = new Button({});
+var right = new Button({});
+
+var controlsReset = new Button({
+  tooltip: 'Reset',
+  imgId: 'resetImg'
+});
+var controlsUnlock = new Button({});
+var controlsHelp = new Button({
+  tooltip: 'Aide',
+  imgId: 'helpImg'
+});
+
+var mfdSwitch = new Button({tooltip: 'Editeur de niveau'});
+
+var editorSave = new Button({
+  tooltip: 'Charger/Partager',
+  imgId: 'save'
+});
+var editorResize = new Button({
+  tooltip: 'Redimensionner niveau',
+  imgId: 'resize'
+});
+
+var editorStart = new Button({tooltip: 'Départ'});
+var ground = new Button({tooltip: 'Sol', selected: true});
+var wall = new Button({tooltip: 'Mur'});
+var hole = new Button({tooltip: 'Trou'});
+var box = new Button({tooltip: 'Boite'});
+
+/*
+------ Code to execute ------
+*/
+
+pbReset();
+
+/*
+------ Functions ------
+*/
+
+// Change the size of a canvas by Id
 function canvasSize(id, x, y) {
   var canvas = document.getElementById(id);
   canvas.width = x;
   canvas.height = y;
 }
 
-// Unlocks level changing without finishing first
+// Unlock level changing without finishing first
 function unlock() {
   if (locked) {
     locked = false;
@@ -87,30 +221,25 @@ function drawTiles() {
   }
 }
 
-var character = {
-  bgColor: '#d90',
-  borderColor: 'black'
-};
-
 // Draw character (while playing level)
 function drawCharacter(tileX, tileY) {
-  pbc.fillStyle = character.bgColor;
+  pbc.fillStyle = char.bgColor;
   var x = tileSize * tileX + tileSize / 2;
   var y = tileSize * tileY + tileSize / 2;
   pbc.beginPath();
-  pbc.arc(x, y, charSize / 2, 0, 2 * Math.PI);
+  pbc.arc(x, y, char.size / 2, 0, 2 * Math.PI);
   pbc.fill();
-  pbc.strokeStyle = character.borderColor;
+  pbc.strokeStyle = char.borderColor;
   pbc.stroke();
   if (finished === true) {
     var img = document.getElementById('smile');
-    x -= charSize / 2;
-    y -= charSize / 2;
+    x -= char.size / 2;
+    y -= char.size / 2;
     if (img.complete) {
-      pbc.drawImage(img, x, y, charSize, charSize);
+      pbc.drawImage(img, x, y, char.size, char.size);
     } else {
       img.onload = function() {
-        pbc.drawImage(img, x, y, charSize, charSize);
+        pbc.drawImage(img, x, y, char.size, char.size);
       }
     }
   }
@@ -205,152 +334,7 @@ function changeLevel(n) {
   levelSelector.value = currentLevel;
 }
 
-// Keyboard inputs
-window.onkeydown = function(event) {
-  var key = event.which || event.keyCode;
-  var currentLevel = Number(levelSelector.value);
-  var nextLevel = currentLevel + 1;
-  var previousLevel = currentLevel - 1;
-  switch (key) {
-    case 37: // Left
-    case 65: // A
-    case 81: // Q 
-      move(-1, 0);
-      break;
-    case 38: // Up
-    case 87: // W
-    case 90: // Z
-      move(0, -1);
-      break;
-    case 39: // Right
-    case 68: // D 
-      move(1, 0);
-      break;
-    case 40: // Down
-    case 83: // S
-      move(0, 1);
-      break;
-    case 33: // PageUp
-      if (locked === false) {
-        changeLevel(nextLevel);
-      }
-      break;
-    case 34: // PageDown
-      if (locked === false) {
-        changeLevel(previousLevel);
-      }
-      break;
-    case 13: // Enter
-      pbReset(); 
-    case 82: // R
-      document.getElementById('levelInput').value = levelId;
-      pbReset();
-  }
-}
-
-var mfdCanvas = {};
-var mfdCenter = {};
-
-var selectedColor = '#893';
-
-// Button object type
-function Button(config) {
-  this.width = config.width || tileSize / 2;
-  this.height = config.height || this.width;
-  this.x = config.x || 0;
-  this.y = config.y || 0;
-  this.bgColor = config.bgColor || '#666';
-  this.borderWidth = config.borderWidth || 1;
-  this.borderColor = config.borderColor || '#333';
-  this.selected = config.selected || false;
-  this.imgId = config.imgId || '';
-  this.tooltip = config.tooltip || '';
-}
-// Button draw method
-Button.prototype.draw = function() {
-  if (this.selected === true) {
-    mfdc.fillStyle = selectedColor;
-    mfdc.fillRect(this.x - 2, this.y - 2, this.width + 4, this.width + 4);
-  }
-  mfdc.fillStyle = this.borderColor;
-  mfdc.fillRect(this.x, this.y, this.width, this.width);
-  mfdc.fillStyle = this.bgColor;
-  mfdc.fillRect(this.x + this.borderWidth, this.y + this.borderWidth,
-                this.width - 2 * this.borderWidth, 
-                this.width - 2 * this.borderWidth);
-  if (this.imgId !== '') {
-    var img = document.getElementById(this.imgId);
-    var x = this.x;
-    var y = this.y;
-    var width = this.width;
-    var height = this.height;
-    if (img.complete) {
-      mfdc.drawImage(img, x, y, width, width);
-    } else {
-      img.onload = function() {
-        mfdc.drawImage(img, x, y, width, width);
-      }
-    }
-  }
-}
-// onButton method (checks if the mouse is on the button)
-Button.prototype.onButton = function(mouseX, mouseY) {
-  if (mouseX >= this.x && 
-      mouseX < this.x + this.width && 
-      mouseY >= this.y && 
-      mouseY < this.y + this.width) {
-    return true;
-  }
-}
-// Hover method (displays tooltip)
-Button.prototype.hover = function() {
-  var mfdX = mfd.offsetLeft;
-  var mfdY = mfd.offsetTop;
-  tooltip.innerHTML = this.tooltip;
-  tooltip.classList.remove('hidden');
-  tooltip.style.left = (mfdX + this.x + this.width ) + 'px';
-  tooltip.style.top = (mfdY + this.y - this.width ) + 'px';
-}
-// Click method
-Button.prototype.click = function() {
-  window.navigator.vibrate(10);
-}
-
-var up = new Button({});
-var down = new Button({});
-var left = new Button({});
-var right = new Button({});
-var controlsReset = new Button({
-  tooltip: 'Reset',
-  imgId: 'resetImg'
-});
-var controlsUnlock = new Button({});
-var controlsHelp = new Button({
-  tooltip: 'Aide',
-  imgId: 'helpImg'
-});
-
-var mfdSave = new Button({
-  tooltip: 'Charger/Partager',
-  imgId: 'save'
-});
-var mfdResize = new Button({
-  tooltip: 'Redimensionner niveau',
-  imgId: 'resize'
-});
-
-var mfdSwitch = new Button({tooltip: 'Editeur de niveau'});
-
-var mfdStart = new Button({tooltip: 'Départ'});
-var ground = new Button({tooltip: 'Sol', selected: true});
-var wall = new Button({tooltip: 'Mur'});
-var hole = new Button({tooltip: 'Trou'});
-var box = new Button({tooltip: 'Boite'});
-
-var mfdState = 'controls';
-
-
-mfdStart.draw = function() {
+editorStart.draw = function() {
   if (this.selected === true) {
     mfdc.fillStyle = selectedColor;
     mfdc.beginPath();
@@ -358,41 +342,44 @@ mfdStart.draw = function() {
              this.width / 2 + 2, 0, 2 * Math.PI);
     mfdc.fill();
   }
-  mfdc.fillStyle = character.bgColor;
+  mfdc.fillStyle = char.bgColor;
   mfdc.beginPath();
   mfdc.arc(this.x + this.width / 2, this.y + this.width / 2, 
           this.width / 2, 0, 2 * Math.PI);
   mfdc.fill();
-  mfdc.strokeStyle = character.borderColor;
+  mfdc.strokeStyle = char.borderColor;
   mfdc.stroke();
 };
 
 // Draw multifonction display (MFD)
 function drawMFD() {
-  var btnSize, btnX, btnY, btnSpace, btnColor, btnBorder, btnBorderColor;
-  mfdCanvas = {width: level.width * tileSize, height: tileSize * 2};
+  var btnX, btnY;
+  // Calculate width of MFD
+  var mfdWidth = btnSize * 2 + arrowBtnSize * 3 + btnSpace * 4;
+  if (mfdWidth < level.width * tileSize) {
+    mfdWidth = level.width * tileSize;
+  }
+  mfdCanvas = {width: mfdWidth, height: arrowBtnSize * 3};
   mfdCenter = {x: mfdCanvas.width / 2, y: mfdCanvas.height / 2};
   canvasSize('mfd', mfdCanvas.width, mfdCanvas.height);
   // MFD background clear
   mfdc.clearRect(0, 0, mfdCanvas.width, mfdCanvas.height);
   // mfdSwitch properties
-  btnSize = tileSize / 2;
-  btnSpace = btnSize / 2;
   btnX = mfdCanvas.width - btnSize - btnSpace;
   btnY = btnSize / 2;
   mfdSwitch.width = btnSize;
   mfdSwitch.x = btnX;
   mfdSwitch.y = btnY;
-  // mfdResize properties
+  // editorResize properties
   btnX = mfdCanvas.width - btnSize * 2 - btnSpace * 2;
-  mfdResize.width = btnSize;
-  mfdResize.x = btnX;
-  mfdResize.y = btnY;
-  // mfdSave properties
+  editorResize.width = btnSize;
+  editorResize.x = btnX;
+  editorResize.y = btnY;
+  // editorSave properties
   btnX = mfdCanvas.width - btnSize * 3 - btnSpace * 3;
-  mfdSave.width = btnSize;
-  mfdSave.x = btnX;
-  mfdSave.y = btnY;
+  editorSave.width = btnSize;
+  editorSave.x = btnX;
+  editorSave.y = btnY;
   // Reset button properties
   btnX = btnSize / 2;
   controlsReset.width = btnSize;
@@ -420,20 +407,19 @@ function drawMFD() {
   // MFD Controls
   if (mfdState === 'controls') {
     // Arrow buttons properties
-    btnSize = tileSize * 2/3;
-    up.width = btnSize;
+    up.width = arrowBtnSize;
     up.x = mfdCenter.x + up.width * -1/2;
     up.y = mfdCenter.y + up.width * -3/2;
     up.imgId = 'arrowUp';
-    down.width = btnSize;
+    down.width = arrowBtnSize;
     down.x = mfdCenter.x + down.width * -1/2;
     down.y = mfdCenter.y + down.width * 1/2;
     down.imgId = 'arrowDown';
-    left.width = btnSize;
+    left.width = arrowBtnSize;
     left.x = mfdCenter.x + left.width * -3/2;
     left.y = mfdCenter.y + left.width * -1/2;
     left.imgId = 'arrowLeft';
-    right.width = btnSize;
+    right.width = arrowBtnSize;
     right.x = mfdCenter.x + right.width * 1/2;
     right.y = mfdCenter.y + right.width * -1/2;
     right.imgId = 'arrowRight';
@@ -451,51 +437,49 @@ function drawMFD() {
   else if (mfdState === 'editor') {
     var types = ['ground', 'wall', 'hole', 'box'];
     var n = types.length;
-    var tileButtonSize = tileSize * 2/3;
-    var space = (mfdCanvas.width - tileButtonSize * n) / (n + 1);
-    btnSize = tileSize / 2;
+    var space = (mfdCanvas.width - tileBtnSize * n) / (n + 1);
     btnX = btnSize * 1/2;
     btnY = btnSize / 2;
     // start properties
-    mfdStart.x = btnX; 
-    mfdStart.y = btnY;
-    mfdStart.width = btnSize;
+    editorStart.x = btnX; 
+    editorStart.y = btnY;
+    editorStart.width = btnSize;
     // ground properties
-    ground.x = space + 0 * (tileButtonSize + space);
+    ground.x = space + 0 * (tileBtnSize + space);
     ground.y = mfdCanvas.height / 2;
-    ground.width = tileButtonSize;
+    ground.width = tileBtnSize;
     ground.bgColor = tileTypes.ground.color;
-    ground.borderWidth = tileTypes.ground.borderWidth * tileButtonSize;
+    ground.borderWidth = tileTypes.ground.borderWidth * tileBtnSize;
     ground.borderColor = tileTypes.ground.borderColor;
     // wall properties
-    wall.x = space + 1 * (tileButtonSize + space);
+    wall.x = space + 1 * (tileBtnSize + space);
     wall.y = mfdCanvas.height / 2;
-    wall.width = tileButtonSize;
+    wall.width = tileBtnSize;
     wall.bgColor = tileTypes.wall.color;
-    wall.borderWidth = tileTypes.wall.borderWidth * tileButtonSize;
+    wall.borderWidth = tileTypes.wall.borderWidth * tileBtnSize;
     wall.borderColor = tileTypes.wall.borderColor;
     // hole properties
-    hole.x = space + 2 * (tileButtonSize + space);
+    hole.x = space + 2 * (tileBtnSize + space);
     hole.y = mfdCanvas.height / 2;
-    hole.width = tileButtonSize;
+    hole.width = tileBtnSize;
     hole.bgColor = tileTypes.hole.color;
-    hole.borderWidth = tileTypes.hole.borderWidth * tileButtonSize;
+    hole.borderWidth = tileTypes.hole.borderWidth * tileBtnSize;
     hole.borderColor = tileTypes.hole.borderColor;
     // box properties
-    box.x = space + 3 * (tileButtonSize + space);
+    box.x = space + 3 * (tileBtnSize + space);
     box.y = mfdCanvas.height / 2;
-    box.width = tileButtonSize;
+    box.width = tileBtnSize;
     box.bgColor = tileTypes.box.color;
-    box.borderWidth = tileTypes.box.borderWidth * tileButtonSize;
+    box.borderWidth = tileTypes.box.borderWidth * tileBtnSize;
     box.borderColor = tileTypes.box.borderColor;
     // draw tile buttons
-    mfdStart.draw()
+    editorStart.draw()
     ground.draw();
     wall.draw();
     hole.draw();
     box.draw();
-    mfdSave.draw();
-    mfdResize.draw();
+    editorSave.draw();
+    editorResize.draw();
     mfdSwitch.imgId = "leaveEditor";
   }
   mfdSwitch.draw();
@@ -677,57 +661,52 @@ function mfdClick(event) {
   }
   // Editor
   else if (mfdState === 'editor') {
-    if (mfdStart.onButton(x, y)) {
+    if (editorStart.onButton(x, y)) {
       editorTileType = 'start';
-      mfdStart.selected = true;
+      editorStart.selected = true;
       ground.selected = false;
       wall.selected = false;
       hole.selected = false;
       box.selected = false;
-      // mfdStart.click();
     }
     else if (ground.onButton(x, y)) {
       editorTileType = 'ground';
-      mfdStart.selected = false;
+      editorStart.selected = false;
       ground.selected = true;
       wall.selected = false;
       hole.selected = false;
       box.selected = false;
-      // ground.click();
     }
     else if (wall.onButton(x, y)) {
       editorTileType = 'wall';
-      mfdStart.selected = false;
+      editorStart.selected = false;
       ground.selected = false;
       wall.selected = true;
       hole.selected = false;
       box.selected = false;
-      // wall.click();
     }
     else if (hole.onButton(x, y)) {
       editorTileType = 'hole';
-      mfdStart.selected = false;
+      editorStart.selected = false;
       ground.selected = false;
       wall.selected = false;
       hole.selected = true;
       box.selected = false;
-      // hole.click();
     }
     else if (box.onButton(x, y)) {
       editorTileType = 'box';
-      mfdStart.selected = false;
+      editorStart.selected = false;
       ground.selected = false;
       wall.selected = false;
       hole.selected = false;
       box.selected = true;
-      // box.click();
     }
-    else if (mfdResize.onButton(x, y)) {
+    else if (editorResize.onButton(x, y)) {
       document.getElementById('resizeX').value = level.width;
       document.getElementById('resizeY').value = level.height;
       document.getElementById('resizeGrid').classList.add('visible');
     }
-    else if (mfdSave.onButton(x, y)) {
+    else if (editorSave.onButton(x, y)) {
       document.getElementById('levelObject').value = JSON.stringify(level);
       document.getElementById('pbSave').classList.add('visible');
       document.getElementById('levelObject').select();
@@ -756,14 +735,14 @@ function mfdHover(event) {
     }
   } else if (mfdState === 'editor') {
     mfdSwitch.tooltip = "Quitter l'éditeur";
-    if (mfdResize.onButton(x, y)) {
-      mfdResize.hover();
+    if (editorResize.onButton(x, y)) {
+      editorResize.hover();
     }
-    else if (mfdSave.onButton(x, y)) {
-      mfdSave.hover();
+    else if (editorSave.onButton(x, y)) {
+      editorSave.hover();
     }
-    else if (mfdStart.onButton(x, y)) {
-      mfdStart.hover();
+    else if (editorStart.onButton(x, y)) {
+      editorStart.hover();
     }
     else if (ground.onButton(x, y)) {
       ground.hover();
@@ -793,13 +772,15 @@ function setTileSize() {
   var w = window.innerWidth;
   var h = window.innerHeight - headerHeight * 4;
 
-  var tileW = Math.floor(w / level.width);
-  var tileH = Math.floor(h / (level.height + 2));
+  // width - borders - small margin / level width
+  var tileW = Math.floor( (w - 2 * 2 - 2) / level.width );
+  // height - arrow buttons - padding from pb
+  var tileH = Math.floor( (h - arrowBtnSize * 3 - 6) / level.height );
 
   if (tileW < tileH) {tileSize = tileW}
   else {tileSize = tileH}
   if (tileSize > 60) {tileSize = 60}
-  charSize = tileSize * 0.8;
+  char.size = tileSize * 0.8;
 }
 
 // Reset when changing window size
@@ -855,4 +836,45 @@ function loadLevel() {
   cancel('pbSave');
 }
 
-pbReset();
+// Keyboard inputs
+window.onkeydown = function(event) {
+  var key = event.which || event.keyCode;
+  var currentLevel = Number(levelSelector.value);
+  var nextLevel = currentLevel + 1;
+  var previousLevel = currentLevel - 1;
+  switch (key) {
+    case 37: // Left
+    case 65: // A
+    case 81: // Q 
+      move(-1, 0);
+      break;
+    case 38: // Up
+    case 87: // W
+    case 90: // Z
+      move(0, -1);
+      break;
+    case 39: // Right
+    case 68: // D 
+      move(1, 0);
+      break;
+    case 40: // Down
+    case 83: // S
+      move(0, 1);
+      break;
+    case 33: // PageUp
+      if (locked === false) {
+        changeLevel(nextLevel);
+      }
+      break;
+    case 34: // PageDown
+      if (locked === false) {
+        changeLevel(previousLevel);
+      }
+      break;
+    case 13: // Enter
+      pbReset(); 
+    case 82: // R
+      document.getElementById('levelInput').value = levelId;
+      pbReset();
+  }
+}
