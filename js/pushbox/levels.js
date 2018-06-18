@@ -7,7 +7,8 @@ var levels = [
       ['ground', 'box'   , 'ground'],
       ['ground', 'ground', 'ground']
     ],
-    start: {x: 1, y: 2}
+    start: {x: 1, y: 2},
+    creatorsBest: 1
   },
   {
     width: 6,
@@ -20,7 +21,8 @@ var levels = [
       ['wall'  , 'wall'  , 'ground', 'ground', 'wall'  , 'box'],
       ['hole'  , 'box'   , 'ground', 'ground', 'ground', 'ground']
     ],
-    start: {x: 1, y: 1}
+    start: {x: 1, y: 1},
+    creatorsBest: 20
   },
   {
     width: 6,
@@ -32,7 +34,8 @@ var levels = [
       ['ground', 'box'   , 'box'   , 'hole'  , 'wall'  , 'wall'],
       ['wall'  , 'ground', 'hole'  , 'ground', 'box'   , 'hole']
     ],
-    start: {x: 1, y: 1}
+    start: {x: 1, y: 1},
+    creatorsBest: 26
   },
   {
     width: 9,
@@ -44,7 +47,8 @@ var levels = [
       ['box'   , 'ground', 'box'   , 'box'   , 'wall'  , 'hole'  , 'box'   , 'box'   , 'ground'],
       ['hole'  , 'ground', 'ground', 'ground', 'wall'  , 'wall'  , 'ground', 'ground', 'ground']
     ],
-    start: {x: 1, y: 2}
+    start: {x: 1, y: 2},
+    creatorsBest: 58
   },
   {
     width: 7,
@@ -58,6 +62,7 @@ var levels = [
       ['ground', 'box'   , 'ground', 'ground', 'box'   , 'ground', 'ground'],
       ['hole'  , 'hole'  , 'hole'  , 'wall'  , 'ground', 'box'   , 'ground'],
       ['hole'  , 'hole'  , 'hole'  , 'wall'  , 'wall'  , 'ground', 'wall']],
-    start: {x: 5, y: 7}
+    start: {x: 5, y: 7},
+    creatorsBest: 94
   }
 ];

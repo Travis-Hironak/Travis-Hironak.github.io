@@ -43,6 +43,7 @@ var mfdCenter = {};
 var mfdState = 'controls'; // name of the MFD display
 var tileType; // type of the tile clicked 
 var editorTileType = 'ground'; // tile type selected in editor
+var outlineColor = '#111'; // highlighting color of selected tile type
 var selectedColor = '#893'; // highlighting color of selected tile type
 
 /*
@@ -52,7 +53,6 @@ var selectedColor = '#893'; // highlighting color of selected tile type
 // Button object type
 function Button(config) {
   this.width = config.width || tileSize / 2;
-  this.height = config.height || this.width;
   this.x = config.x || 0;
   this.y = config.y || 0;
   this.bgColor = config.bgColor || '#666';
@@ -64,6 +64,8 @@ function Button(config) {
 }
 // Button draw method
 Button.prototype.draw = function() {
+  mfdc.fillStyle = outlineColor;
+  mfdc.fillRect(this.x - 1, this.y -1, this.width + 2, this.width + 2);
   if (this.selected === true) {
     mfdc.fillStyle = selectedColor;
     mfdc.fillRect(this.x - 2, this.y - 2, this.width + 4, this.width + 4);
@@ -104,8 +106,8 @@ Button.prototype.hover = function() {
   var mfdY = mfd.offsetTop;
   tooltip.innerHTML = this.tooltip;
   tooltip.classList.remove('hidden');
-  tooltip.style.left = (mfdX + this.x + this.width ) + 'px';
-  tooltip.style.top = (mfdY + this.y - this.width ) + 'px';
+  tooltip.style.left = (mfdX + this.x + this.width) + 'px';
+  tooltip.style.top = (mfdY + this.y - this.width * 2/3) + 'px';
 }
 // Click method
 Button.prototype.click = function() {
@@ -181,6 +183,7 @@ function unlock() {
 function pbReset() {
   document.getElementById('moves').innerHTML = 0;
   document.getElementById('moves').classList.remove('good');
+  document.getElementById('moves').classList.remove('neutral');
   moves = 0;
   finished = false;
   pbText();
@@ -314,7 +317,11 @@ function move(x, y) {
 function victory() {
   finished = true;
   pbText();
-  document.getElementById('moves').classList.add('good');
+  if (moves <= level.creatorsBest || level.creatorsBest === undefined) {
+    document.getElementById('moves').classList.add('good');
+  } else {
+    document.getElementById('moves').classList.add('neutral');
+  }
   changeLevel(levelId + 1);
 }
 
@@ -809,6 +816,14 @@ function pbText() {
 
 // Display help
 function help() {
+  var best;
+  if (level.creatorsBest === undefined) {
+    best = 'inconnu.';
+  } else {
+    best = 'de ' + level.creatorsBest + ' mouvements.' +
+      "<br> Pouvez vous l'égaler ou peut-être même le battre ?";
+  }
+  document.getElementById('creatorsBest').innerHTML = best;
   document.getElementById('help').classList.add('visible');
 }
 
