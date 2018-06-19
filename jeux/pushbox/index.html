@@ -42,19 +42,19 @@
 <div id="help" class="overlay" onclick="this.classList.remove('visible')">
   <div class="window info">
     <h6>Contrôles :</h6>
-    <p><ul>
+    <ul>
       <li><b>ZQSD</b> / <b>WASD</b> / &uarr;&larr;&darr;&rarr; pour se déplacer</li>
       <li><b>R</b> pour recommencer le niveau</li>
       <li><b>Page préc.</b> / <b>Page suiv.</b> pour changer de niveau (si le
         <br> changement de niveau est déverrouillé)</li>
       <li><b>Entrée</b> pour valider le niveau choisi</li>
-    </ul></p>
+    </ul>
     <h6>Infos :</h6>
-    <p><ul>
+    <ul>
       <li>Il n'est pas possible de marcher dans les trous.</li>
       <li>Il est possible de marcher sur les boites qui sont dans<br> 
         un trou ou de pousser une autre boite par dessus.</li>
-    </ul></p>
+    </ul>
     <h6>Score</h6>
     <p>Le meilleur score pour ce niveau est 
     <span id="creatorsBest"></span></p>
@@ -77,13 +77,17 @@
 <div id="gridSize" class="overlay">
   <div class="window info">
     <h6>Editeur de niveau</h6>
-    <b>Taille de grille :</b>  x =
-    <input id="gridX" type="number" min="3" max="20" value="4"></input>
-    , y = 
-    <input id="gridY" type="number" min="3" max="12" value="4"></input>
-    <button id="cancel" onclick="cancel('gridSize')">Annuler</button>
-    <button id="keepLevel" onclick="levelEditor(false); mfdHover(event);">Modifier niveau actuel</button>
-    <button id="newLevel" onclick="levelEditor(true); mfdHover(event);">Nouveau niveau</button>
+    <p>
+      <b>Taille de grille :</b>  x =
+      <input id="gridX" type="number" min="3" max="20" value="4"></input>
+      , y = 
+      <input id="gridY" type="number" min="3" max="12" value="4"></input>
+    </p>
+    <p>
+      <button id="cancel" onclick="cancel('gridSize')">Annuler</button>
+      <button id="keepLevel" onclick="levelEditor(false); mfdHover(event);">Modifier niveau actuel</button>
+      <button id="newLevel" onclick="levelEditor(true); mfdHover(event);">Nouveau niveau</button>
+    </p>
   </div>
 </div>
 

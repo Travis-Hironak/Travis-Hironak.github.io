@@ -208,7 +208,7 @@ function drawTiles() {
     for (var i = 0; i < level.width; i++) {
       tileType = tiles[j][i];
       x = tileSize * i;
-      y = tileSize * j; debugger;
+      y = tileSize * j;
       // Draw border if > 0
       if (tileTypes[tileType].borderWidth > 0) {
         pbc.fillStyle = tileTypes[tileType].borderColor;

@@ -55,6 +55,19 @@ var levels = [
     creator: 'Travis'
   },
   {
+    width:10,
+    height:5,
+    tiles:[
+      ['g','g','h','w','g','g','g','g','g','g'],
+      ['w','g','g','w','g','g','b','g','b','g'],
+      ['h','g','g','b','g','g','w','h','w','h'],
+      ['g','g','g','w','g','g','b','g','b','g'],
+      ['w','g','h','w','g','g','g','g','g','g']],
+    start:{x:2,y:2},
+    creatorsBest: 95,
+    creator: 'Travis'
+  },
+  {
     width: 7,
     height: 8,
     tiles:[
