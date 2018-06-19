@@ -252,9 +252,10 @@ function drawCharacter(tileX, tileY) {
 function drawStart(tileX, tileY) {
   var x = tileX * tileSize + tileSize / 2;
   var y = tileY * tileSize + tileSize / 2;
-  pbc.arc(x, y, (char.size - 1) / 2, 0, 2 * Math.PI);
   pbc.strokeStyle = char.bgColor;
   pbc.lineWidth = 2;
+  pbc.beginPath();
+  pbc.arc(x, y, (char.size - 1) / 2, 0, 2 * Math.PI);
   pbc.stroke();
 }
 
@@ -825,7 +826,7 @@ function pbText() {
 
 // Display help
 function help() {
-  var best;
+  var best, creator;
   if (level.creatorsBest === undefined) {
     best = 'inconnu.';
   } else {
@@ -833,6 +834,12 @@ function help() {
       "<br> Pouvez vous l'égaler ou peut-être même le battre ?";
   }
   document.getElementById('creatorsBest').innerHTML = best;
+  if (level.creator === undefined) {
+    creator = 'Inconnu';
+  } else {
+    creator = level.creator;
+  }
+  document.getElementById('creator').innerHTML = creator;
   document.getElementById('help').classList.add('visible');
 }
 
