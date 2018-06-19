@@ -3,66 +3,92 @@ var levels = [
     width: 3,
     height: 3,
     tiles:[
-      ['wall'  , 'hole'  , 'wall'],
-      ['ground', 'box'   , 'ground'],
-      ['ground', 'ground', 'ground']
+      ['w', 'h', 'w'],
+      ['g', 'b', 'g'],
+      ['g', 'g', 'g']
     ],
     start: {x: 1, y: 2},
-    creatorsBest: 1
+    creatorsBest: 1,
+    creator: 'Travis'
   },
   {
     width: 6,
     height: 6,
     tiles:[
-      ['wall'  , 'hole'  , 'wall',   'wall'  , 'wall'  , 'wall'],
-      ['ground', 'ground', 'ground', 'box'   , 'ground', 'hole'],
-      ['ground', 'ground', 'ground', 'wall'  , 'ground', 'ground'],
-      ['ground', 'ground', 'ground', 'ground', 'ground', 'ground'],
-      ['wall'  , 'wall'  , 'ground', 'ground', 'wall'  , 'box'],
-      ['hole'  , 'box'   , 'ground', 'ground', 'ground', 'ground']
+      ['w', 'h', 'w', 'w', 'w', 'w'],
+      ['g', 'g', 'g', 'b', 'g', 'h'],
+      ['g', 'g', 'g', 'w', 'g', 'g'],
+      ['g', 'g', 'g', 'g', 'g', 'g'],
+      ['w', 'w', 'g', 'g', 'w', 'b'],
+      ['h', 'b', 'g', 'g', 'g', 'g']
     ],
     start: {x: 1, y: 1},
-    creatorsBest: 20
+    creatorsBest: 20,
+    creator: 'Travis'
   },
   {
     width: 6,
     height: 5,
     tiles:[
-      ['wall'  , 'ground', 'ground', 'wall'  , 'ground', 'ground'],
-      ['ground', 'ground', 'box'   , 'wall'  , 'box'   , 'ground'],
-      ['hole'  , 'ground', 'hole'  , 'box'   , 'ground', 'hole'],
-      ['ground', 'box'   , 'box'   , 'hole'  , 'wall'  , 'wall'],
-      ['wall'  , 'ground', 'hole'  , 'ground', 'box'   , 'hole']
+      ['w', 'g', 'g', 'w', 'g', 'g'],
+      ['g', 'g', 'b', 'w', 'b', 'g'],
+      ['h', 'g', 'h', 'b', 'g', 'h'],
+      ['g', 'b', 'b', 'h', 'w', 'w'],
+      ['w', 'g', 'h', 'g', 'b', 'h']
     ],
     start: {x: 1, y: 1},
-    creatorsBest: 26
+    creatorsBest: 26,
+    creator: 'TigerWar'
   },
   {
     width: 9,
     height: 5,
     tiles:[
-      ['hole'  , 'ground', 'ground', 'wall'  , 'wall'  , 'ground', 'box'   , 'ground', 'hole'],
-      ['wall'  , 'box'   , 'ground', 'ground', 'wall'  , 'ground', 'ground', 'ground', 'wall'],
-      ['ground', 'ground', 'ground', 'hole'  , 'hole'  , 'hole'  , 'ground', 'ground', 'ground'],
-      ['box'   , 'ground', 'box'   , 'box'   , 'wall'  , 'hole'  , 'box'   , 'box'   , 'ground'],
-      ['hole'  , 'ground', 'ground', 'ground', 'wall'  , 'wall'  , 'ground', 'ground', 'ground']
+      ['h', 'g', 'g', 'w', 'w', 'g', 'b', 'g', 'h'],
+      ['w', 'b', 'g', 'g', 'w', 'g', 'g', 'g', 'w'],
+      ['g', 'g', 'g', 'h', 'h', 'h', 'g', 'g', 'g'],
+      ['b', 'g', 'b', 'b', 'w', 'h', 'b', 'b', 'g'],
+      ['h', 'g', 'g', 'g', 'w', 'w', 'g', 'g', 'g']
     ],
     start: {x: 1, y: 2},
-    creatorsBest: 58
+    creatorsBest: 58,
+    creator: 'Travis'
   },
   {
     width: 7,
     height: 8,
     tiles:[
-      ['ground', 'ground', 'ground', 'ground', 'ground', 'ground', 'wall'],
-      ['box'   , 'box'   , 'ground', 'hole'  , 'box'   , 'ground', 'wall'],
-      ['hole'  , 'ground', 'box'   , 'ground', 'box'   , 'ground', 'wall'],
-      ['hole'  , 'wall'  , 'wall'  , 'ground', 'wall'  , 'wall'  , 'wall'],
-      ['box'   , 'ground', 'ground', 'ground', 'ground', 'ground', 'ground'],
-      ['ground', 'box'   , 'ground', 'ground', 'box'   , 'ground', 'ground'],
-      ['hole'  , 'hole'  , 'hole'  , 'wall'  , 'ground', 'box'   , 'ground'],
-      ['hole'  , 'hole'  , 'hole'  , 'wall'  , 'wall'  , 'ground', 'wall']],
+      ['g', 'g', 'g', 'g', 'g', 'g', 'w'],
+      ['b', 'b', 'g', 'h', 'b', 'g', 'w'],
+      ['h', 'g', 'b', 'g', 'b', 'g', 'w'],
+      ['h', 'w', 'w', 'g', 'w', 'w', 'w'],
+      ['b', 'g', 'g', 'g', 'g', 'g', 'g'],
+      ['g', 'b', 'g', 'g', 'b', 'g', 'g'],
+      ['h', 'h', 'h', 'w', 'g', 'b', 'g'],
+      ['h', 'h', 'h', 'w', 'w', 'g', 'w']],
     start: {x: 5, y: 7},
-    creatorsBest: 94
+    creatorsBest: 94,
+    creator: 'Travis'
+  },
+  {
+    width:20,
+    height:12,
+    tiles:[
+      ['g','g','g','g','g','g','g','g','g','g','g','g','g','w','g','g','g','g','g','g'],
+      ['g','g','g','g','g','g','g','g','w','g','w','g','g','w','g','g','w','w','w','g'],
+      ['g','g','g','g','g','g','g','g','g','g','g','g','w','w','g','g','w','w','g','g'],
+      ['g','g','g','g','g','w','w','w','g','w','g','g','g','h','b','g','w','w','g','g'],
+      ['g','g','g','g','g','w','w','g','g','g','g','g','g','w','g','g','g','g','g','g'],
+      ['g','g','g','b','g','w','w','w','g','w','g','w','g','w','g','w','g','w','g','w'],
+      ['g','g','g','g','g','w','w','g','g','g','g','g','g','h','g','g','g','g','g','g'],
+      ['g','g','w','w','w','g','g','w','g','g','g','g','g','w','g','g','g','g','g','g'],
+      ['g','g','w','h','g','g','g','g','w','g','g','g','g','w','g','g','w','w','g','g'],
+      ['g','g','w','w','w','g','g','g','g','w','g','g','g','g','g','g','g','b','g','g'],
+      ['g','w','g','g','g','g','g','g','g','g','g','g','g','g','g','g','w','w','g','w'],
+      ['w','w','g','g','g','g','g','g','g','g','w','g','g','w','g','g','g','g','g','g']
+    ],
+    start:{x:1,y:1},
+    creatorsBest: 84,
+    creator: 'Dubinois'
   }
 ];

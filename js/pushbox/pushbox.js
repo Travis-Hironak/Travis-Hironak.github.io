@@ -42,7 +42,7 @@ var mfdCenter = {};
 
 var mfdState = 'controls'; // name of the MFD display
 var tileType; // type of the tile clicked 
-var editorTileType = 'ground'; // tile type selected in editor
+var editorTileType = 'g'; // tile type selected in editor
 var outlineColor = '#111'; // highlighting color of selected tile type
 var selectedColor = '#893'; // highlighting color of selected tile type
 
@@ -183,7 +183,7 @@ function unlock() {
 function pbReset() {
   document.getElementById('moves').innerHTML = 0;
   document.getElementById('moves').classList.remove('good');
-  document.getElementById('moves').classList.remove('neutral');
+  document.getElementById('moves').classList.remove('bad');
   moves = 0;
   finished = false;
   pbText();
@@ -208,7 +208,7 @@ function drawTiles() {
     for (var i = 0; i < level.width; i++) {
       tileType = tiles[j][i];
       x = tileSize * i;
-      y = tileSize * j;
+      y = tileSize * j; debugger;
       // Draw border if > 0
       if (tileTypes[tileType].borderWidth > 0) {
         pbc.fillStyle = tileTypes[tileType].borderColor;
@@ -250,12 +250,12 @@ function drawCharacter(tileX, tileY) {
 
 // Draw start position (while editing level)
 function drawStart(tileX, tileY) {
-  pbc.font = '14px sans-serif';
-  pbc.fillStyle = 'white';
-  pbc.textAlign = 'center';
-  var x = tileSize * tileX + tileSize / 2;
-  var y = tileSize * tileY + tileSize / 2;
-  pbc.fillText('Départ', x, y + 6, tileSize);
+  var x = tileX * tileSize + tileSize / 2;
+  var y = tileY * tileSize + tileSize / 2;
+  pbc.arc(x, y, (char.size - 1) / 2, 0, 2 * Math.PI);
+  pbc.strokeStyle = char.bgColor;
+  pbc.lineWidth = 2;
+  pbc.stroke();
 }
 
 // Move
@@ -300,7 +300,7 @@ function move(x, y) {
         // Check if there are no holes left
         var holes = [];
         for (var i = 0; i < level.height; i++) {
-          holes.push(tiles[i].indexOf('hole'));
+          holes.push(tiles[i].indexOf('h'));
         }
         holes.sort(function(a, b){return b-a});
         if (holes[0] === -1) {
@@ -320,7 +320,7 @@ function victory() {
   if (moves <= level.creatorsBest || level.creatorsBest === undefined) {
     document.getElementById('moves').classList.add('good');
   } else {
-    document.getElementById('moves').classList.add('neutral');
+    document.getElementById('moves').classList.add('bad');
   }
   changeLevel(levelId + 1);
 }
@@ -442,7 +442,7 @@ function drawMFD() {
   }
   // MFD Editor
   else if (mfdState === 'editor') {
-    var types = ['ground', 'wall', 'hole', 'box'];
+    var types = ['g', 'w', 'h', 'b'];
     var n = types.length;
     var space = (mfdCanvas.width - tileBtnSize * n) / (n + 1);
     btnX = btnSize * 1/2;
@@ -455,30 +455,30 @@ function drawMFD() {
     ground.x = space + 0 * (tileBtnSize + space);
     ground.y = mfdCanvas.height / 2;
     ground.width = tileBtnSize;
-    ground.bgColor = tileTypes.ground.color;
-    ground.borderWidth = tileTypes.ground.borderWidth * tileBtnSize;
-    ground.borderColor = tileTypes.ground.borderColor;
+    ground.bgColor = tileTypes.g.color;
+    ground.borderWidth = tileTypes.g.borderWidth * tileBtnSize;
+    ground.borderColor = tileTypes.g.borderColor;
     // wall properties
     wall.x = space + 1 * (tileBtnSize + space);
     wall.y = mfdCanvas.height / 2;
     wall.width = tileBtnSize;
-    wall.bgColor = tileTypes.wall.color;
-    wall.borderWidth = tileTypes.wall.borderWidth * tileBtnSize;
-    wall.borderColor = tileTypes.wall.borderColor;
+    wall.bgColor = tileTypes.w.color;
+    wall.borderWidth = tileTypes.w.borderWidth * tileBtnSize;
+    wall.borderColor = tileTypes.w.borderColor;
     // hole properties
     hole.x = space + 2 * (tileBtnSize + space);
     hole.y = mfdCanvas.height / 2;
     hole.width = tileBtnSize;
-    hole.bgColor = tileTypes.hole.color;
-    hole.borderWidth = tileTypes.hole.borderWidth * tileBtnSize;
-    hole.borderColor = tileTypes.hole.borderColor;
+    hole.bgColor = tileTypes.h.color;
+    hole.borderWidth = tileTypes.h.borderWidth * tileBtnSize;
+    hole.borderColor = tileTypes.h.borderColor;
     // box properties
     box.x = space + 3 * (tileBtnSize + space);
     box.y = mfdCanvas.height / 2;
     box.width = tileBtnSize;
-    box.bgColor = tileTypes.box.color;
-    box.borderWidth = tileTypes.box.borderWidth * tileBtnSize;
-    box.borderColor = tileTypes.box.borderColor;
+    box.bgColor = tileTypes.b.color;
+    box.borderWidth = tileTypes.b.borderWidth * tileBtnSize;
+    box.borderColor = tileTypes.b.borderColor;
     // draw tile buttons
     editorStart.draw()
     ground.draw();
@@ -520,7 +520,7 @@ function resizeGrid(newLevelWidth, newLevelHeight) {
     for (j = level.height; j < newLevelHeight; j++) {
       var newRow = [];
       for (i = 0; i < level.width; i ++) {
-        newRow.push('ground');
+        newRow.push('g');
       }
       level.tiles.push(newRow);
     }
@@ -537,7 +537,7 @@ function resizeGrid(newLevelWidth, newLevelHeight) {
   else if (newLevelWidth > level.width) {
     for (j = 0; j < level.height; j++) {
       for (i = level.width; i < newLevelWidth; i++) {
-        level.tiles[j].push('ground');
+        level.tiles[j].push('g');
       }
     }
   }
@@ -569,7 +569,7 @@ function levelEditor(levelNew) {
     for (var j = 0; j < newLevelHeight; j++) {
       newLevelTiles.push([]);
       for (var i = 0; i < newLevelWidth; i++) {
-        newLevelTiles[j].push('ground');
+        newLevelTiles[j].push('g');
       }
     }
     var newLevel = {
@@ -677,7 +677,7 @@ function mfdClick(event) {
       box.selected = false;
     }
     else if (ground.onButton(x, y)) {
-      editorTileType = 'ground';
+      editorTileType = 'g';
       editorStart.selected = false;
       ground.selected = true;
       wall.selected = false;
@@ -685,7 +685,7 @@ function mfdClick(event) {
       box.selected = false;
     }
     else if (wall.onButton(x, y)) {
-      editorTileType = 'wall';
+      editorTileType = 'w';
       editorStart.selected = false;
       ground.selected = false;
       wall.selected = true;
@@ -693,7 +693,7 @@ function mfdClick(event) {
       box.selected = false;
     }
     else if (hole.onButton(x, y)) {
-      editorTileType = 'hole';
+      editorTileType = 'h';
       editorStart.selected = false;
       ground.selected = false;
       wall.selected = false;
@@ -701,7 +701,7 @@ function mfdClick(event) {
       box.selected = false;
     }
     else if (box.onButton(x, y)) {
-      editorTileType = 'box';
+      editorTileType = 'b';
       editorStart.selected = false;
       ground.selected = false;
       wall.selected = false;
@@ -720,6 +720,7 @@ function mfdClick(event) {
     }
     drawMFD();
   }
+  tooltip.classList.add('hidden');
 }
 
 mfd.addEventListener('mousemove', mfdHover);
@@ -792,7 +793,15 @@ function setTileSize() {
 
 // Reset when changing window size
 window.onresize = function() {
-  pbReset();
+  setTileSize();
+  canvasSize('pushbox', level.width * tileSize, level.height * tileSize);
+  drawTiles();
+  if (mfdState === 'controls') {
+    drawCharacter(charPos.x, charPos.y);
+  } else {
+    drawStart(level.start.x, level.start.y);
+  }
+  drawMFD();
 }
 
 // Change text above pushbox
@@ -820,7 +829,7 @@ function help() {
   if (level.creatorsBest === undefined) {
     best = 'inconnu.';
   } else {
-    best = 'de ' + level.creatorsBest + ' mouvements.' +
+    best = 'de <b class="good">' + level.creatorsBest + '</b> mouvements.' +
       "<br> Pouvez vous l'égaler ou peut-être même le battre ?";
   }
   document.getElementById('creatorsBest').innerHTML = best;

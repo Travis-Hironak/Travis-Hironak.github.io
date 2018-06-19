@@ -77,9 +77,9 @@
   <div class="window info">
     <h6>Editeur de niveau</h6>
     <b>Taille de grille :</b>  x =
-    <input id="gridX" type="number" min="4" max="20" value="4"></input>
+    <input id="gridX" type="number" min="3" max="20" value="4"></input>
     , y = 
-    <input id="gridY" type="number" min="4" max="12" value="4"></input>
+    <input id="gridY" type="number" min="3" max="12" value="4"></input>
     <button id="cancel" onclick="cancel('gridSize')">Annuler</button>
     <button id="keepLevel" onclick="levelEditor(false); mfdHover(event);">Modifier niveau actuel</button>
     <button id="newLevel" onclick="levelEditor(true); mfdHover(event);">Nouveau niveau</button>
@@ -90,9 +90,9 @@
   <div class="window info">
     <h6>Redimensionnement du niveau</h6>
     <b>Taille de grille :</b>  x =
-    <input id="resizeX" type="number" min="4" max="20" value="4"></input>
+    <input id="resizeX" type="number" min="3" max="20" value="4"></input>
     , y = 
-    <input id="resizeY" type="number" min="4" max="12" value="4"></input>
+    <input id="resizeY" type="number" min="3" max="12" value="4"></input>
     <button id="cancel" onclick="cancel('resizeGrid')">Annuler</button>
     <button id="resizeValidate" onclick="resizeLevel()">Valider</button>
   </div>
