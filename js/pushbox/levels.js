@@ -41,6 +41,19 @@ var levels = [
     creator: 'TigerWar'
   },
   {
+    width:14,
+    height:4,
+    tiles:[
+      ['h','b','h','b','g','g','g','h','w','h','h','g','b','g'],
+      ['b','g','h','w','g','w','g','g','w','g','w','g','g','h'],
+      ['g','w','b','w','g','w','g','b','w','b','w','g','b','w'],
+      ['h','b','h','b','g','w','g','g','b','h','h','g','g','w']
+    ],
+    start:{x:6,y:2},
+    creatorsBest: 53,
+    creator: 'TigerWar'
+  },
+  {
     width: 9,
     height: 5,
     tiles:[
@@ -103,5 +116,21 @@ var levels = [
     start:{x:1,y:1},
     creatorsBest: 84,
     creator: 'Dubinois'
+  },
+  {
+    width:8,
+    height:7,
+    tiles:[
+      ['h','h','h','g','g','g','b','h'],
+      ['h','b','h','g','b','h','w','w'],
+      ['g','h','h','g','w','b','g','g'],
+      ['w','g','w','g','w','g','b','g'],
+      ['g','g','b','g','h','b','g','g'],
+      ['g','b','g','b','g','g','b','g'],
+      ['g','g','g','g','w','g','g','g']
+    ],
+    start:{x:3,y:1},
+    creatorsBest: 115,
+    creator: 'Travis'
   }
 ];

@@ -783,7 +783,7 @@ function setTileSize() {
 
   // width - borders - small margin / level width
   var tileW = Math.floor( (w - 2 * 2 - 2) / level.width );
-  // height - arrow buttons - padding from pb
+  // height - arrow buttons - padding from #pb
   var tileH = Math.floor( (h - arrowBtnSize * 3 - 6) / level.height );
 
   if (tileW < tileH) {tileSize = tileW}
