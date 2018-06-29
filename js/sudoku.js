@@ -6,20 +6,6 @@ function randomNumber(n) { // random number from 0 to (n-1)
   return Math.floor(Math.random() * n);
 }
 
-function shuffle(array) { // Fisher-Yates-Durstenfeld Shuffle
-  var shufArray = array;
-  var lcv = array.length - 1; // loop control value
-  var n, nElem, lastElem; // lastElem == Last unchanged element
-  for (; lcv >= 0; lcv--) {
-    n = randomNumber(lcv + 1);
-    nElem = shufArray[n];
-    lastElem = shufArray[lcv];
-    shufArray.splice(n, 1, lastElem);
-    shufArray.splice(lcv, 1, nElem);
-  }
-  return shufArray;
-}
-
 function sudokuTable(n) {
   sudoku.className = 'sudoku n' + n;
   sudoku.innerHTML = '';

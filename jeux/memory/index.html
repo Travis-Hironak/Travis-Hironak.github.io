@@ -27,20 +27,57 @@
 
 <div id="noColumn">
   <main>
-    <link rel="stylesheet" href="/css/memory.css">
+    <link rel="stylesheet" href="/css/jeux/memory.css">
 
-<div id="memory"></div>
+<div id="memory" class="colored lettered"></div>
 
 <div id="memInfo">
   <div id="memControls">
-    <span>Nombre de paires :</span>
+    <span>Paires :</span>
     <input id="pairs" type="number" min="4" max="16" value="8"></input>
     <button id="reset" onclick="reset()">Reset</button>
   </div>
   <p><b>Score :</b> <span id="score">0</span></p>
 </div>
+<div id="memOptions">
+  <ul class="inline bar">
+    <li id="lettersText" class="radioText checked">
+      <input type="radio" id="letters" name="cardType" 
+      value="letters" onclick="cardType()" checked>
+      <label for="letters">Lettres</label>
+    </li>
+    <li id="numbersText" class="radioText">
+      <input type="radio" id="numbers" name="cardType" 
+      value="numbers"  onclick="cardType()">
+      <label for="numbers">Nombres</label>
+    </li>
+    <li id="symbolsText" class="radioText">
+      <input type="radio" id="symbols" name="cardType" 
+      value="symbols" onclick="cardType()">
+      <label for="symbols">Symboles</label>
+    </li>
+    <li id="greekText" class="radioText">
+      <input type="radio" id="greek" name="cardType" 
+      value="greek" onclick="cardType()">
+      <label for="greek">Grec</label>
+    </li>
+    <li id="noneText" class="radioText">
+      <input type="radio" id="none" name="cardType" 
+      value="none" onclick="cardType()">
+      <label for="none">Vide</label>
+    </li>
+  </ul>
+  <ul class="inline bar">
+     <li id="colorsText" class="checkboxText checked">
+      <input type="checkbox" id="colors" name="colors" checked 
+        onclick="toggleColor()">
+      <label for="colors">Couleurs</label>
+    </li>
+  </ul>
+</div>
 
 <script src="/js/memory.js"></script>
+
   </main>                       
 </div>
 

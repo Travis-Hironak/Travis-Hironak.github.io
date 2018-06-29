@@ -1,3 +1,48 @@
+// Check if x is even
+function isEven(x) {
+  return (x % 2) === 0;
+}
+
+// Incr of letter with charCode
+function incrLetter(x) { 
+  return String.fromCharCode(x.charCodeAt(0) + 1);
+}
+
+// Incr of char in an array
+function incrChar(char, array) {
+  var nextChar;
+  var currentIndex = array.indexOf(char);
+  if (currentIndex === -1) {
+    currentIndex = 0;
+  }
+  if (currentIndex + 1 === array.length) {
+    nextChar = array[0];
+  } else {
+    nextChar = array[currentIndex + 1];
+  }
+  return nextChar;
+}
+
+// random number from 0 to (n-1)
+function randomNumber(n) {
+  return Math.floor(Math.random() * n);
+}
+
+// Fisher-Yates-Durstenfeld Shuffle
+function shuffle(array) {
+  var shufArray = array;
+  var lcv = array.length - 1;
+  var n, nElem, lastElem;
+  for (; lcv >= 0; lcv--) {
+    n = randomNumber(lcv + 1);
+    nElem = shufArray[n];
+    lastElem = shufArray[lcv];
+    shufArray.splice(n, 1, lastElem);
+    shufArray.splice(lcv, 1, nElem);
+  }
+  return shufArray;
+}
+
 function spoiler() {
   var button = document.activeElement;
   button.classList.toggle('active');
@@ -122,4 +167,29 @@ function carouselPrevious(control) {
   current.className = current.className.replace('current', 'next');
   previous.className = previous.className.replace('previous', 'current');
   newPrevious.classList.add('previous');
+}
+
+
+// Clean DOM - Function by James Edwards 
+// (www.sitepoint.com/removing-useless-nodes-from-the-dom)
+function clean(node)
+{
+  for(var n = 0; n < node.childNodes.length; n ++)
+  {
+    var child = node.childNodes[n];
+    if
+    (
+      child.nodeType === 8 
+      || 
+      (child.nodeType === 3 && !/\S/.test(child.nodeValue))
+    )
+    {
+      node.removeChild(child);
+      n --;
+    }
+    else if(child.nodeType === 1)
+    {
+      clean(child);
+    }
+  }
 }
