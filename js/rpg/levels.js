@@ -1,6 +1,7 @@
 var field = new Level({
   width: 20,
   height: 30,
+  spawn: {x: 9, y: 10}
 });
 
 field.fillTiles('grass');
@@ -12,3 +13,11 @@ for (var i = 0; i < bushes.length; i++) {
   var y = bushes[i][1];
   field.tiles[x][y].type = 'bush';
 }
+
+
+var field2 = new Level({
+  width: 10,
+  height: 10,
+  spawn: {x: 5, y: 5}
+});
+field2.fillTiles('rock');

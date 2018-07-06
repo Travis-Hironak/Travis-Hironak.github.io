@@ -5,8 +5,8 @@
 var rpg = document.getElementById('rpg');
 var rpgc = rpg.getContext('2d');
 
-var framerate = 30;
-var tileSize = 50;
+var framerate = 60;
+var tileSize = 32;
 
 /*
   Object constructors
@@ -16,6 +16,7 @@ function Level(config) {
   this.width = config.width || 10;
   this.height = config.height || 10;
   this.tiles = config.tiles;
+  this.spawn = config.spawn || {x: 0, y: 0};
 }
 
 function Tile(config) {
@@ -101,7 +102,7 @@ Character.prototype.draw = function() {
                         player);
   var imgId = this.imgId;
   if (imgId !== '') {
-    var img = document.getElementById(imgId);debugger;
+    var img = document.getElementById(imgId);
     if (img.complete) {
       rpgc.drawImage(img, coords.x, coords.y, this.width, this.height);
     } else {
@@ -182,20 +183,46 @@ Character.prototype.move = function() {
 */
 
 var player = new Character({
-  x: 9 * tileSize + tileSize / 2,
-  y: 10 * tileSize + tileSize / 2,
+  // x: 9 * tileSize + tileSize / 2,
+  // y: 10 * tileSize + tileSize / 2,
   imgId: 'player',
-  speed: 1/5 * tileSize
+  speed: 1/8 * tileSize
 });
+
+player.spawn = function() {
+  this.x = currentLvl.spawn.x * tileSize + tileSize / 2;
+  this.y = currentLvl.spawn.y * tileSize + tileSize / 2;
+  this.nextTile.x = this.x;
+  this.nextTile.y = this.y;
+}
 
 
 /*
   Functions
 */
 
+function changeLevel(level) {
+  currentLvl = level;
+  player.spawn();
+}
+
 // Coordinates relative to a ref element
 function relCoord(elemX, elemY, ref) {
   var relX = elemX - ref.x + rpg.width / 2;
   var relY = elemY - ref.y + rpg.height / 2;
   return {x: relX, y: relY}; // relative coordinates as an object
+}
+
+function resizeCanvas() {
+  var header = document.getElementById('mainHeader');
+  var navbar = header.getElementsByClassName('navbar')[0];
+  var headerHeight = navbar.clientHeight;
+
+  var w = window.innerWidth - 10;
+  if (w > 800) {w = 800}
+  var h = window.innerHeight - headerHeight * 3;
+  if (h > 600) {h = 600}
+
+  rpg.width = w;
+  rpg.height = h;
 }
