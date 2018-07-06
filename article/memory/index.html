@@ -61,34 +61,34 @@
 <div id="memOptions">
   <ul class="inline bar">
     <li id="lettersText" class="radioText checked">
-      <input type="radio" id="letters" name="cardType" 
+      <input type="radio" id="letters" name="cardType"
       value="letters" onclick="cardType()" checked>
       <label for="letters">Lettres</label>
     </li>
     <li id="numbersText" class="radioText">
-      <input type="radio" id="numbers" name="cardType" 
+      <input type="radio" id="numbers" name="cardType"
       value="numbers"  onclick="cardType()">
       <label for="numbers">Nombres</label>
     </li>
     <li id="symbolsText" class="radioText">
-      <input type="radio" id="symbols" name="cardType" 
+      <input type="radio" id="symbols" name="cardType"
       value="symbols" onclick="cardType()">
       <label for="symbols">Symboles</label>
     </li>
     <li id="greekText" class="radioText">
-      <input type="radio" id="greek" name="cardType" 
+      <input type="radio" id="greek" name="cardType"
       value="greek" onclick="cardType()">
       <label for="greek">Grec</label>
     </li>
     <li id="noneText" class="radioText">
-      <input type="radio" id="none" name="cardType" 
+      <input type="radio" id="none" name="cardType"
       value="none" onclick="cardType()">
       <label for="none">Vide</label>
     </li>
   </ul>
   <ul class="inline bar">
      <li id="colorsText" class="checkboxText checked">
-      <input type="checkbox" id="colors" name="colors" checked 
+      <input type="checkbox" id="colors" name="colors" checked
         onclick="toggleColor()">
       <label for="colors">Couleurs</label>
     </li>
@@ -159,7 +159,7 @@
 <span class="kd">function</span> <span class="nx">flip</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span>
   <span class="nx">elem</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span> <span class="c1">// elem = id de la carte cliquee</span>
 
-  <span class="k">if</span> <span class="p">(</span><span class="nx">elem</span><span class="p">.</span><span class="nx">classList</span><span class="p">.</span><span class="nx">contains</span><span class="p">(</span><span class="s1">&#39;flipped&#39;</span><span class="p">)</span> <span class="o">===</span> <span class="kc">false</span><span class="p">)</span> <span class="p">{</span> 
+  <span class="k">if</span> <span class="p">(</span><span class="nx">elem</span><span class="p">.</span><span class="nx">classList</span><span class="p">.</span><span class="nx">contains</span><span class="p">(</span><span class="s1">&#39;flipped&#39;</span><span class="p">)</span> <span class="o">===</span> <span class="kc">false</span><span class="p">)</span> <span class="p">{</span>
   <span class="c1">// verifie que la carte n&#39;est pas deja retournee</span>
 
     <span class="nx">elem</span><span class="p">.</span><span class="nx">classList</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="s1">&#39;flipped&#39;</span><span class="p">);</span> <span class="c1">// retourne la carte</span>
@@ -183,7 +183,7 @@
 <span class="kd">function</span> <span class="nx">unflip</span><span class="p">()</span> <span class="p">{</span>
   <span class="kd">var</span> <span class="nx">fl</span> <span class="o">=</span> <span class="nx">flipped</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="c1">//nb de cartes retournees</span>
   <span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="nx">fl</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span><span class="o">--</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="p">(</span><span class="nx">flipped</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">classList</span><span class="p">.</span><span class="nx">contains</span><span class="p">(</span><span class="s1">&#39;found&#39;</span><span class="p">))</span> <span class="p">{</span> <span class="k">continue</span><span class="p">;</span> <span class="p">}</span> 
+    <span class="k">if</span> <span class="p">(</span><span class="nx">flipped</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">classList</span><span class="p">.</span><span class="nx">contains</span><span class="p">(</span><span class="s1">&#39;found&#39;</span><span class="p">))</span> <span class="p">{</span> <span class="k">continue</span><span class="p">;</span> <span class="p">}</span>
     <span class="c1">// saute cette etape si la carte appartient a une paire trouvee</span>
     <span class="nx">flipped</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">classList</span><span class="p">.</span><span class="nx">remove</span><span class="p">(</span><span class="s1">&#39;flipped&#39;</span><span class="p">);</span> <span class="c1">// retourne la carte</span>
   <span class="p">}</span>
@@ -357,13 +357,13 @@
 <p>La prochaine étape sera certainement de créer des images en SVG (Scalable Vector Graphics) pour chacune des paires et de proposer un choix entre lettres et images, ainsi qu'une option pour afficher ou non le fond coloré.</p>
 
 </div>
-    
+
 
   <div id="disqus_thread"></div>
   <script>
     var disqus_config = function () {
       this.page.url = 'http://hironak.fr/article/memory';
-      this.page.identifier = 'hironak00004'; 
+      this.page.identifier = 'hironak00004';
     };
     (function() { // DON'T EDIT BELOW THIS LINE
       var d = document, s = d.createElement('script');
@@ -376,7 +376,7 @@
 
 
 <script id="dsq-count-scr" src="//hironak.disqus.com/count.js" async></script>
-  </main>                       
+  </main>
 </div>
 
 

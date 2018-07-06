@@ -110,14 +110,14 @@ function draw() {
   var memCards = '';
   for (i = 0; i < pairs; i++) {
     memCards += '<div id="' + letter + '1" class="card mem' + letter +
-      '" onclick="flip(this.id)">' + '<div class="front">' + 
+      '" onclick="flip(this.id)">' + '<div class="front">' +
       '<span class="letter">' + letter + '</span>' +
       '<span class="number">' + number + '</span>' +
       '<span class="symbol">' + symbol + '</span>' +
       '<span class="greek">' + greek + '</span>' +
       '</div><div class="back"></div></div>' +
       '<div id="' + letter + '2" class="card mem' + letter +
-      '" onclick="flip(this.id)">' + '<div class="front">' + 
+      '" onclick="flip(this.id)">' + '<div class="front">' +
       '<span class="letter">' + letter + '</span>' +
       '<span class="number">' + number + '</span>' +
       '<span class="symbol">' + symbol + '</span>' +

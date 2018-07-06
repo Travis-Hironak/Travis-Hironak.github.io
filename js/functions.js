@@ -4,7 +4,7 @@ function isEven(x) {
 }
 
 // Incr of letter with charCode
-function incrLetter(x) { 
+function incrLetter(x) {
   return String.fromCharCode(x.charCodeAt(0) + 1);
 }
 
@@ -23,7 +23,7 @@ function incrChar(char, array) {
   return nextChar;
 }
 
-// random number from 0 to (n-1)
+// random integer from 0 to (n-1)
 function randomNumber(n) {
   return Math.floor(Math.random() * n);
 }
@@ -48,7 +48,7 @@ function spoiler() {
   button.classList.toggle('active');
   button.nextElementSibling.classList.toggle('visible');
   var text = button.innerHTML;
-  text = (text.indexOf('Afficher') >= 0) ? 
+  text = (text.indexOf('Afficher') >= 0) ?
     text.replace('Afficher', 'Cacher') :
     text.replace('Cacher', 'Afficher');
   button.innerHTML = text;
@@ -170,7 +170,7 @@ function carouselPrevious(control) {
 }
 
 
-// Clean DOM - Function by James Edwards 
+// Clean DOM - Function by James Edwards
 // (www.sitepoint.com/removing-useless-nodes-from-the-dom)
 function clean(node)
 {
@@ -179,8 +179,8 @@ function clean(node)
     var child = node.childNodes[n];
     if
     (
-      child.nodeType === 8 
-      || 
+      child.nodeType === 8
+      ||
       (child.nodeType === 3 && !/\S/.test(child.nodeValue))
     )
     {

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>Logo | Hironak.fr</title>
+  <title>Prototype de RPG | Hironak.fr</title>
   <meta name="viewport" content="user-scalable=no, initial-scale = 1, minimum-scale = 1, maximum-scale = 1, width=device-width">
 
   <link href='http://fonts.googleapis.com/css?family=Alegreya+Sans:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
@@ -27,19 +27,30 @@
 
 <div id="noColumn">
   <main>
-    <link rel="stylesheet" href="/css/logo.css">
+    <link rel="stylesheet" href="/css/jeux/rpg.css">
 
-<svg id="svg" viewbox="0 0 800 800">
-  <rect id="background" width="800" height="800" />
-  <circle id="extCircle" r="350" cx="400" cy="400" />
-  <circle id="redCircle" r="320" cx="400" cy="400" />
-  <polygon id="topTriangle" points="380,80 420,80 400,130" />
-  <path id="north" d="M 400 160 L 350 330 Q 400 295 450 330 L 400 160" />
-  <path id="south" d="M 400 160 L 350 330 Q 400 295 450 330 L 400 160" />
-  <circle id="smallRedCircle" r="60" cx="400" cy="400" />
-  <circle id="centerCircle" r="25" cx="400" cy="400" />
-  </g>
-</svg>
+<canvas id="rpg" width="800" height="600"></canvas>
+
+<div id="debug">
+  <ul>
+    <li>tile walkable = <span id="debug1"></span></li>
+    <li>player.facing = <span id="debug2"></span></li>
+    <li>player.speed = <span id="debug3"></span></li>
+  </ul>
+</div>
+
+<div class="hidden">
+  <img src="/assets/rpg/player.png" alt="player" id="player">
+  <img src="/assets/rpg/grass.png" alt="grass" id="grass">
+  <img src="/assets/rpg/bush.png" alt="bush" id="bush">
+</div>
+
+<script src="/js/rpg/prototype.js"></script>
+<script src="/js/rpg/tileTypes.js"></script>
+<script src="/js/rpg/levels.js"></script>
+<script src="/js/rpg/execute.js"></script>
+<script src="/js/rpg/inputs.js"></script>
+
   </main>
 </div>
 

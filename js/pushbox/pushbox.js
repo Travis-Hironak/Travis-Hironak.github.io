@@ -41,7 +41,7 @@ var mfdCanvas = {};
 var mfdCenter = {};
 
 var mfdState = 'controls'; // name of the MFD display
-var tileType; // type of the tile clicked 
+var tileType; // type of the tile clicked
 var editorTileType = 'g'; // tile type selected in editor
 var outlineColor = '#111'; // highlighting color of selected tile type
 var selectedColor = '#893'; // highlighting color of selected tile type
@@ -74,7 +74,7 @@ Button.prototype.draw = function() {
   mfdc.fillRect(this.x, this.y, this.width, this.width);
   mfdc.fillStyle = this.bgColor;
   mfdc.fillRect(this.x + this.borderWidth, this.y + this.borderWidth,
-                this.width - 2 * this.borderWidth, 
+                this.width - 2 * this.borderWidth,
                 this.width - 2 * this.borderWidth);
   if (this.imgId !== '') {
     var img = document.getElementById(this.imgId);
@@ -93,9 +93,9 @@ Button.prototype.draw = function() {
 }
 // onButton method (checks if the mouse is on the button)
 Button.prototype.onButton = function(mouseX, mouseY) {
-  if (mouseX >= this.x && 
-      mouseX < this.x + this.width && 
-      mouseY >= this.y && 
+  if (mouseX >= this.x &&
+      mouseX < this.x + this.width &&
+      mouseY >= this.y &&
       mouseY < this.y + this.width) {
     return true;
   }
@@ -217,7 +217,7 @@ function drawTiles() {
       // Adjust size according to border
       border = Math.ceil(tileTypes[tileType].borderWidth * tileSize);
       size = tileSize - 2 * border;
-      // Draw tile 
+      // Draw tile
       pbc.fillStyle = tileTypes[tileType].color;
       pbc.fillRect(x + border, y + border, size, size);
     }
@@ -274,7 +274,7 @@ function move(x, y) {
     // Is the next tile inside of the grid?
     if (charPos.x + x >= 0 && charPos.x + x < level.width &&
         charPos.y + y >= 0 && charPos.y + y < level.height) {
-      nextTile = {x: charPos.x + x, y: charPos.y + y, 
+      nextTile = {x: charPos.x + x, y: charPos.y + y,
                   type: tiles[charPos.y + y][charPos.x + x]};
     } else {
       nextTile = {type: 'empty'};
@@ -290,7 +290,7 @@ function move(x, y) {
     // Is the next tile walkable?
     if (tileTypes[nextTile.type].walkable === true) {
       moveChar();
-    } 
+    }
     // Is the next tile pushable?
     else if (tileTypes[nextTile.type].pushable === true) {
       // Is the pushtile boxable?
@@ -346,13 +346,13 @@ editorStart.draw = function() {
   if (this.selected === true) {
     mfdc.fillStyle = selectedColor;
     mfdc.beginPath();
-    mfdc.arc(this.x + this.width / 2, this.y + this.width / 2, 
+    mfdc.arc(this.x + this.width / 2, this.y + this.width / 2,
              this.width / 2 + 2, 0, 2 * Math.PI);
     mfdc.fill();
   }
   mfdc.fillStyle = char.bgColor;
   mfdc.beginPath();
-  mfdc.arc(this.x + this.width / 2, this.y + this.width / 2, 
+  mfdc.arc(this.x + this.width / 2, this.y + this.width / 2,
           this.width / 2, 0, 2 * Math.PI);
   mfdc.fill();
   mfdc.strokeStyle = char.borderColor;
@@ -449,7 +449,7 @@ function drawMFD() {
     btnX = btnSize * 1/2;
     btnY = btnSize / 2;
     // start properties
-    editorStart.x = btnX; 
+    editorStart.x = btnX;
     editorStart.y = btnY;
     editorStart.width = btnSize;
     // ground properties
@@ -515,7 +515,7 @@ function resizeGrid(newLevelWidth, newLevelHeight) {
     for (j = newLevelHeight; j < level.height; j++) {
       level.tiles.pop();
     }
-  } 
+  }
   else if (newLevelHeight > level.height) {
     heightDiff = newLevelHeight - level.height;
     for (j = level.height; j < newLevelHeight; j++) {
@@ -777,7 +777,7 @@ function setTileSize() {
   var header = document.getElementById('mainHeader');
   var navbar = header.getElementsByClassName('navbar')[0];
   var headerHeight = navbar.clientHeight;
-  
+
   var w = window.innerWidth;
   var h = window.innerHeight - headerHeight * 4;
 
@@ -817,7 +817,7 @@ function pbText() {
       pbText.classList.add('good');
       pbText.innerHTML = 'Appuyez sur Entrée ou cliquez sur le niveau pour passer au prochain.'
     }
-  } 
+  }
   else {
     pbText.classList.remove('good');
     pbText.innerHTML = 'Poussez une boite dans chaque trou !';
@@ -876,7 +876,7 @@ window.onkeydown = function(event) {
   switch (key) {
     case 37: // Left
     case 65: // A
-    case 81: // Q 
+    case 81: // Q
       move(-1, 0);
       break;
     case 38: // Up
@@ -885,7 +885,7 @@ window.onkeydown = function(event) {
       move(0, -1);
       break;
     case 39: // Right
-    case 68: // D 
+    case 68: // D
       move(1, 0);
       break;
     case 40: // Down
@@ -903,7 +903,7 @@ window.onkeydown = function(event) {
       }
       break;
     case 13: // Enter
-      pbReset(); 
+      pbReset();
     case 82: // R
       document.getElementById('levelInput').value = levelId;
       pbReset();

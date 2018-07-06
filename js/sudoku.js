@@ -69,7 +69,7 @@ function sudokuGenerate(base) {
       row = sudokuArray[y];
 
       if (nb != undefined) {
-        row.push(nb); // Adds nb to the current row  
+        row.push(nb); // Adds nb to the current row
       } else {
         if (retries < maxRetries) {
           sudokuArray[y] = [];

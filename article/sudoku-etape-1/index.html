@@ -81,7 +81,7 @@
                                  <span class="c1">// la mise en forme en fonction du nombre de</span>
                                  <span class="c1">// lignes/colonnes</span>
   <span class="nx">sudoku</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">;</span> <span class="c1">// Supprime le contenu du tableau (reset)</span>
-  <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">y</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">y</span> <span class="o">&lt;</span> <span class="nx">baseP</span><span class="p">;</span> <span class="nx">y</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span> 
+  <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">y</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">y</span> <span class="o">&lt;</span> <span class="nx">baseP</span><span class="p">;</span> <span class="nx">y</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
     <span class="kd">var</span> <span class="nx">row</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s1">&#39;tr&#39;</span><span class="p">);</span> <span class="c1">// cree une ligne</span>
     <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">x</span> <span class="o">&lt;</span> <span class="nx">baseP</span><span class="p">;</span> <span class="nx">x</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
       <span class="kd">var</span> <span class="nx">cell</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">createElement</span><span class="p">(</span><span class="s1">&#39;td&#39;</span><span class="p">);</span> <span class="c1">// cree une cellule</span>
@@ -96,7 +96,7 @@
 
 <p>La taille des cellules et la séparation entre les blocs (2x2, 3x3 ou 4x4) est gérée avec un peu de CSS.</p>
 
-<div class="spoiler"> 
+<div class="spoiler">
   <button class="spoilTrigger" onclick="spoiler()">Afficher code (CSS)</button>
   <div class="spoilContent">
 <div class="highlight"><pre><code class="css"><span class="nf">#sudoku</span> <span class="p">{</span>
@@ -113,15 +113,15 @@
   <span class="k">border</span><span class="o">:</span> <span class="m">1px</span> <span class="k">solid</span><span class="p">;</span>
 <span class="p">}</span>
 
-<span class="nf">#sudoku</span><span class="nc">.n2</span> <span class="nt">tr</span><span class="nd">:nth-of-type</span><span class="o">(</span><span class="nt">2n</span><span class="o">)</span> <span class="nt">td</span><span class="o">,</span> 
-<span class="nf">#sudoku</span><span class="nc">.n3</span> <span class="nt">tr</span><span class="nd">:nth-of-type</span><span class="o">(</span><span class="nt">3n</span><span class="o">)</span> <span class="nt">td</span><span class="o">,</span> 
+<span class="nf">#sudoku</span><span class="nc">.n2</span> <span class="nt">tr</span><span class="nd">:nth-of-type</span><span class="o">(</span><span class="nt">2n</span><span class="o">)</span> <span class="nt">td</span><span class="o">,</span>
+<span class="nf">#sudoku</span><span class="nc">.n3</span> <span class="nt">tr</span><span class="nd">:nth-of-type</span><span class="o">(</span><span class="nt">3n</span><span class="o">)</span> <span class="nt">td</span><span class="o">,</span>
 <span class="nf">#sudoku</span><span class="nc">.n4</span> <span class="nt">tr</span><span class="nd">:nth-of-type</span><span class="o">(</span><span class="nt">4n</span><span class="o">)</span> <span class="nt">td</span> <span class="p">{</span> <span class="o">//</span> <span class="n">cellules</span> <span class="n">positionnees</span> <span class="n">toutes</span> <span class="n">les</span>
   <span class="k">border-bottom-width</span><span class="o">:</span> <span class="m">2px</span><span class="p">;</span>        <span class="o">//</span> <span class="m">2</span><span class="o">,</span><span class="m">3</span> <span class="n">ou</span> <span class="m">4</span> <span class="n">lignes</span>
 <span class="p">}</span>
 
-<span class="nf">#sudoku</span><span class="nc">.n2</span> <span class="nt">td</span><span class="nd">:nth-of-type</span><span class="o">(</span><span class="nt">2n</span><span class="o">),</span> 
-<span class="nf">#sudoku</span><span class="nc">.n3</span> <span class="nt">td</span><span class="nd">:nth-of-type</span><span class="o">(</span><span class="nt">3n</span><span class="o">),</span> 
-<span class="nf">#sudoku</span><span class="nc">.n4</span> <span class="nt">td</span><span class="nd">:nth-of-type</span><span class="o">(</span><span class="nt">4n</span><span class="o">)</span> <span class="p">{</span> <span class="o">//</span> <span class="n">cellules</span> <span class="n">positionnees</span> <span class="n">toutes</span> <span class="n">les</span> 
+<span class="nf">#sudoku</span><span class="nc">.n2</span> <span class="nt">td</span><span class="nd">:nth-of-type</span><span class="o">(</span><span class="nt">2n</span><span class="o">),</span>
+<span class="nf">#sudoku</span><span class="nc">.n3</span> <span class="nt">td</span><span class="nd">:nth-of-type</span><span class="o">(</span><span class="nt">3n</span><span class="o">),</span>
+<span class="nf">#sudoku</span><span class="nc">.n4</span> <span class="nt">td</span><span class="nd">:nth-of-type</span><span class="o">(</span><span class="nt">4n</span><span class="o">)</span> <span class="p">{</span> <span class="o">//</span> <span class="n">cellules</span> <span class="n">positionnees</span> <span class="n">toutes</span> <span class="n">les</span>
   <span class="k">border-right</span><span class="o">-</span><span class="k">width</span><span class="o">:</span> <span class="m">2px</span><span class="p">;</span>      <span class="o">//</span> <span class="m">2</span><span class="o">,</span><span class="m">3</span> <span class="n">ou</span> <span class="m">4</span> <span class="n">colonnes</span>
 <span class="p">}</span>
 </code></pre></div>
@@ -189,7 +189,7 @@
           <span class="p">}</span>
         <span class="p">}</span>
       <span class="p">}</span>
-      
+
       <span class="k">do</span> <span class="p">{</span> <span class="kd">var</span> <span class="nx">nb</span> <span class="o">=</span> <span class="nx">nbArray</span><span class="p">.</span><span class="nx">shift</span><span class="p">();</span> <span class="p">}</span>    <span class="c1">// Extrait la prochaine valeur</span>
       <span class="k">while</span> <span class="p">(</span><span class="nx">nbFilled</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">nb</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">);</span> <span class="c1">// tant qu&#39;elle existe dans nbFilled</span>
       <span class="nx">cell</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="nx">nb</span><span class="p">;</span>
@@ -241,8 +241,8 @@
       <span class="kd">var</span> <span class="nx">rowCells</span> <span class="o">=</span> <span class="nx">row</span><span class="p">.</span><span class="nx">getElementsByTagName</span><span class="p">(</span><span class="s1">&#39;td&#39;</span><span class="p">);</span>
 
       <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">x</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">x</span> <span class="o">&lt;</span> <span class="nx">baseP</span><span class="p">;</span> <span class="nx">x</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-        
-      <span class="c1">// morceau de code vu precedemment </span>
+
+      <span class="c1">// morceau de code vu precedemment</span>
 
       <span class="p">}</span>
 
@@ -346,7 +346,7 @@ J'ai essayé d'optimiser un peu mon code pour limiter le nombre d'opérations et
         <span class="nx">nbFilled</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">row</span><span class="p">[</span><span class="nx">i</span><span class="p">]);</span>
       <span class="p">}</span>
 
-      <span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">y</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>  <span class="c1">// ajoute chaque nombre de la colonne </span>
+      <span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">y</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>  <span class="c1">// ajoute chaque nombre de la colonne</span>
         <span class="nx">row</span> <span class="o">=</span> <span class="nx">sudokuArray</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
         <span class="nx">nbFilled</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">row</span><span class="p">[</span><span class="nx">x</span><span class="p">]);</span>
       <span class="p">}</span>
@@ -532,7 +532,7 @@ J'ai essayé d'optimiser un peu mon code pour limiter le nombre d'opérations et
       <span class="nx">row</span> <span class="o">=</span> <span class="nx">sudokuArray</span><span class="p">[</span><span class="nx">y</span><span class="p">];</span>
 
       <span class="k">if</span> <span class="p">(</span><span class="nx">nb</span> <span class="o">!=</span> <span class="kc">undefined</span><span class="p">)</span> <span class="p">{</span>
-        <span class="nx">row</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">nb</span><span class="p">);</span> <span class="c1">// Adds nb to the current row  </span>
+        <span class="nx">row</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">nb</span><span class="p">);</span> <span class="c1">// Adds nb to the current row</span>
       <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
         <span class="k">if</span> <span class="p">(</span><span class="nx">retries</span> <span class="o">&lt;</span> <span class="nx">maxRetries</span><span class="p">)</span> <span class="p">{</span>
           <span class="nx">sudokuArray</span><span class="p">[</span><span class="nx">y</span><span class="p">]</span> <span class="o">=</span> <span class="p">[];</span>
@@ -599,13 +599,13 @@ J'ai essayé d'optimiser un peu mon code pour limiter le nombre d'opérations et
 </div>
 
 </div>
-    
+
 
   <div id="disqus_thread"></div>
   <script>
     var disqus_config = function () {
       this.page.url = 'http://hironak.fr/article/sudoku-etape-1';
-      this.page.identifier = 'hironak00005'; 
+      this.page.identifier = 'hironak00005';
     };
     (function() { // DON'T EDIT BELOW THIS LINE
       var d = document, s = d.createElement('script');
@@ -618,7 +618,7 @@ J'ai essayé d'optimiser un peu mon code pour limiter le nombre d'opérations et
 
 
 <script id="dsq-count-scr" src="//hironak.disqus.com/count.js" async></script>
-  </main>                       
+  </main>
 </div>
 
 
