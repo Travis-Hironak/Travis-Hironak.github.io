@@ -882,6 +882,7 @@ window.onkeydown = function(event) {
     case 38: // Up
     case 87: // W
     case 90: // Z
+      event.preventDefault();
       move(0, -1);
       break;
     case 39: // Right
@@ -890,15 +891,18 @@ window.onkeydown = function(event) {
       break;
     case 40: // Down
     case 83: // S
+      event.preventDefault();
       move(0, 1);
       break;
     case 33: // PageUp
       if (locked === false) {
+        event.preventDefault();
         changeLevel(nextLevel);
       }
       break;
     case 34: // PageDown
       if (locked === false) {
+        event.preventDefault();
         changeLevel(previousLevel);
       }
       break;

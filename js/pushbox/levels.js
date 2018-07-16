@@ -27,6 +27,22 @@ var levels = [
     creator: 'Travis'
   },
   {
+    width:7,
+    height:7,
+    tiles:[
+      ["h","g","g","w","g","g","h"],
+      ["g","g","g","w","w","w","g"],
+      ["g","g","b","g","w","g","g"],
+      ["b","g","g","g","g","b","g"],
+      ["h","w","g","g","g","g","g"],
+      ["g","g","b","g","g","g","g"],
+      ["g","g","g","g","w","g","h"]
+    ],
+    start:{x:4,y:4},
+    creatorsBest: 31,
+    creator: 'Xem'
+  },
+  {
     width: 6,
     height: 5,
     tiles:[

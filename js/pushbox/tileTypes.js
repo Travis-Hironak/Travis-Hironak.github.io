@@ -1,10 +1,10 @@
 var tileTypes = {
-  empty: {
+  empty: { // empty tile (outside grid)
     walkable: false,
     pushable: false,
     boxable: false
   },
-  g: {
+  g: { // ground
     walkable: true,
     pushable: false,
     boxable: true,
@@ -13,7 +13,7 @@ var tileTypes = {
     borderColor: '#311',
     borderWidth: 0.01
   },
-  w: {
+  w: { // wall
     walkable: false,
     pushable: false,
     boxable: false,
@@ -21,7 +21,7 @@ var tileTypes = {
     borderColor: '#333',
     borderWidth: 0.1
   },
-  h: {
+  h: { // hole
     walkable: false,
     pushable: false,
     boxable: true,
@@ -29,7 +29,7 @@ var tileTypes = {
     color: '#27100d',
     borderWidth: 0
   },
-  b: {
+  b: { // box
     walkable: false,
     pushable: true,
     boxable: false,
@@ -38,7 +38,7 @@ var tileTypes = {
     borderColor: '#321',
     borderWidth: 0.05
   },
-  boxInHole: {
+  boxInHole: { // box over a hole
     walkable: true,
     pushable: false,
     boxable: true,
@@ -47,7 +47,7 @@ var tileTypes = {
     borderColor: '#321',
     borderWidth: 0.05
   },
-  boxOnBox: {
+  boxOnBox: { // box over a box
     walkable: false,
     pushable: true,
     boxable: false,
