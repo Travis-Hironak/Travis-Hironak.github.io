@@ -21,6 +21,8 @@ function Level(config) {
 
 function Tile(config) {
   this.type = config.type || 'grass';
+  this.stepFunction = config.stepFunction || '';
+  this.sfParams = config.sfParams || '';
 }
 
 function TileType(config) {
@@ -139,39 +141,65 @@ Character.prototype.tileWalkable = function() {
   return walkable;
 }
 
+Character.prototype.stepFunction = function() {
+  var x = (this.nextTile.x - tileSize / 2) / tileSize;
+  var y = (this.nextTile.y - tileSize / 2) / tileSize;
+  var f = currentLvl.tiles[x][y].stepFunction;
+  var p = currentLvl.tiles[x][y].sfParams;
+  var params = '';
+  if (f != '') {
+    var sF = window[f];
+    for (var i = 0; i < p.length; i++) {
+      params += p[i];
+      if (i < p.length - 1) {
+        params += ', ';
+      }
+    }
+    console.log(params);
+    var sfParams = window[params];
+    sF(sfParams);
+  }
+}
+
 // Move until middle of next tile
 Character.prototype.move = function() {
   if (this.x % tileSize === tileSize / 2 &&
       this.y % tileSize === tileSize / 2 &&
-      this.tileWalkable() === false) {return;}
+      this.tileWalkable() === false) {
+    return;
+  }
   var moveCoef = 1; // walk speed
   if (this.sprint === true) {
     moveCoef = this.sprintCoef; // sprint speed
   }
   var moveX = this.speed * this.facing.x * moveCoef;
   if (this.facing.x > 0) { // movement rightward
-    if (this.x + moveX > this.nextTile.x) {
+    if (this.x + moveX >= this.nextTile.x) {
       this.x = this.nextTile.x;
+      this.stepFunction();
     } else {
       this.x += moveX;
     }
   } else if (this.facing.x < 0) { // movement leftward
-    if (this.x + moveX < this.nextTile.x) {
+    if (this.x + moveX <= this.nextTile.x) {
       this.x = this.nextTile.x;
+      this.stepFunction();
     } else {
       this.x += moveX;
     }
   }
   var moveY = this.speed * this.facing.y * moveCoef;
   if (this.facing.y > 0) { // movement upward
-    if (this.y + moveY > this.nextTile.y) {
+    if (this.y + moveY >= this.nextTile.y) {
       this.y = this.nextTile.y;
+      this.stepFunction();
     } else {
       this.y += moveY;
     }
   } else if (this.facing.y < 0) { // movement downward
-    if (this.y + moveY < this.nextTile.y) {
+    if (this.y + moveY <= this.nextTile.y) {
       this.y = this.nextTile.y;
+      this.stepFunction();
     } else {
       this.y += moveY;
     }

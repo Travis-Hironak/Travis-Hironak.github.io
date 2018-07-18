@@ -30,10 +30,10 @@ window.onkeydown = function(event) {
       player.startMoving(0, 1);
       break;
     case 34: // PageDown
-      changeLevel(field);
+      // changeLevel(field);
       break;
     case 33: // PageUp
-      changeLevel(field2);
+      // changeLevel(castle);
       break;
     case 16: // Shift
       event.preventDefault(); // prevent selection

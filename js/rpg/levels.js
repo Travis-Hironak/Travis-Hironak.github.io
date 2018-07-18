@@ -13,11 +13,21 @@ for (var i = 0; i < bushes.length; i++) {
   var y = bushes[i][1];
   field.tiles[x][y].type = 'bush';
 }
+field.tiles[11][10] = new Tile({
+  type: 'rock',
+  stepFunction: 'changeLevel',
+  sfParams: ['castle']
+});
 
 
-var field2 = new Level({
+var castle = new Level({
   width: 10,
   height: 10,
   spawn: {x: 5, y: 5}
 });
-field2.fillTiles('rock');
+castle.fillTiles('rock');
+castle.tiles[8][8] = new Tile({
+  type: 'grass',
+  stepFunction: 'changeLevel',
+  sfParams: ['field']
+});
