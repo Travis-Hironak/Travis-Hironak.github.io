@@ -21,8 +21,6 @@ var charPos = {}; // Current character position
 var levelInput;
 var levelSelector = document.getElementById('levelInput');
 levelSelector.value = 1;
-levelSelector.min = 1;
-levelSelector.max = levels.length - 1;
 
 var tileSize = 60; // Tile size, gets changed by setTileSize
 
@@ -40,10 +38,10 @@ var char = { // Properties of the character
 var mfdCanvas = {};
 var mfdCenter = {};
 
-var mfdState = 'controls'; // name of the MFD display
-var tileType; // type of the tile clicked
-var editorTileType = 'g'; // tile type selected in editor
-var outlineColor = '#111'; // highlighting color of selected tile type
+var mfdState = 'controls'; // name of the MFD state
+var tileType; // type of the clicked tile
+var editorTileType = 'g'; // tile type selected in editor (ground)
+var outlineColor = '#111'; // outline color of non-selected tile types
 var selectedColor = '#893'; // highlighting color of selected tile type
 
 /*
@@ -187,9 +185,10 @@ function pbReset() {
   moves = 0;
   finished = false;
   pbText();
-  levelInput = document.getElementById('levelInput').value;
+  levelInput = Number(document.getElementById('levelInput').value);
+  levelInput = changeLevel(levelInput);
   document.getElementById('level').innerHTML = levelInput;
-  levelId = Number(levelInput);
+  levelId = levelInput;
   level = levels[levelInput];
   setTileSize();
   canvasSize('pushbox', level.width * tileSize, level.height * tileSize);
@@ -259,7 +258,7 @@ function drawStart(tileX, tileY) {
   pbc.stroke();
 }
 
-// Move
+// Move (character and boxes)
 function move(x, y) {
   var nextTile = {};
   var pushTile = {};
@@ -328,18 +327,18 @@ function victory() {
 
 // Changing level
 function changeLevel(n) {
+  var levelMin = 1;
+  var levelMax = levels.length - 1;
+  levelSelector.min = levelMin; // update input min
+  levelSelector.max = levelMax; // update input max
   var currentLevel = n;
-  levelSelector.min = 1;
-  levelSelector.max = levels.length - 1;
-  var levelMin = Number(levelSelector.min);
-  var levelMax = Number(levelSelector.max);
-  levelSelector.value = n;
-  if (currentLevel < levelMin) {
+  if (n < levelMin) {
     currentLevel = levelMin;
-  } else if (currentLevel > levelMax) {
+  } else if (n > levelMax) {
     currentLevel = levelMax;
   }
-  levelSelector.value = currentLevel;
+  levelSelector.value = currentLevel; // update input value
+  return currentLevel;
 }
 
 editorStart.draw = function() {
@@ -724,7 +723,7 @@ function mfdClick(event) {
   tooltip.classList.add('hidden');
 }
 
-mfd.addEventListener('mousemove', mfdHover);
+document.addEventListener('mousemove', mfdHover);
 // Mouse tooltip
 function mfdHover(event) {
   var x = event.offsetX;

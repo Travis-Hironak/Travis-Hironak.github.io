@@ -211,10 +211,8 @@ Character.prototype.move = function() {
 */
 
 var player = new Character({
-  // x: 9 * tileSize + tileSize / 2,
-  // y: 10 * tileSize + tileSize / 2,
   imgId: 'player',
-  speed: 1/8 * tileSize
+  speed: 1/10 * tileSize
 });
 
 player.spawn = function() {
