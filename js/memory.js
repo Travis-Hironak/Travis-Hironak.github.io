@@ -88,6 +88,22 @@ function reset() {
   randomize();
 }
 
+function pairsNumber(n) {
+  var pairs = document.getElementById('pairs');
+  var currentValue = Number(pairs.value);
+  var min = Number(pairs.min);
+  var max = Number(pairs.max);
+  if (currentValue + n < min) {
+    currentValue = min;
+  } else if (currentValue + n > max) {
+    currentValue = max;
+  } else {
+    currentValue += n;
+  }
+  pairs.value = currentValue;
+  return currentValue;
+}
+
 function randomize() {
   var cardsArray = [];
   for (i = 0; i < cards.length; i++) {
@@ -102,7 +118,7 @@ function randomize() {
 }
 
 function draw() {
-  var pairs = document.getElementById('pairs').value;
+  var pairs = pairsNumber(0);
   var letter = 'A';
   var number = 0;
   var symbol = symbolsArray[0];

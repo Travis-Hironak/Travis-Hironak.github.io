@@ -34,7 +34,9 @@
 <div id="memInfo">
   <div id="memControls">
     <span>Paires :</span>
-    <input id="pairs" type="number" min="4" max="16" value="8"></input>
+    <button class="pairsControls" onclick="pairsNumber(-1)">-</button>
+    <input id="pairs" type="number" min="4" max="16" value="10"></input>
+    <button class="pairsControls" onclick="pairsNumber(1)">+</button>
     <button id="reset" onclick="reset()">Reset</button>
   </div>
   <p><b>Score :</b> <span id="score">0</span></p>
