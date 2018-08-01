@@ -198,6 +198,7 @@ function pbReset() {
   drawCharacter(charPos.x, charPos.y);
   if (mfdState === 'editor') {mfdState = 'controls';}
   drawMFD();
+  mfdMouseout();
 }
 
 // Draw level
@@ -723,7 +724,7 @@ function mfdClick(event) {
   tooltip.classList.add('hidden');
 }
 
-document.addEventListener('mousemove', mfdHover);
+mfd.addEventListener('mousemove', mfdHover);
 // Mouse tooltip
 function mfdHover(event) {
   var x = event.offsetX;
@@ -769,6 +770,13 @@ function mfdHover(event) {
   if (mfdSwitch.onButton(x, y)) {
     mfdSwitch.hover();
   }
+}
+
+mfd.addEventListener('mouseout', mfdMouseout);
+// Prevent tooltip from being displayed when the mouse is not on the MFD
+function mfdMouseout() {
+  tooltip.classList.add('hidden');
+  tooltip.innerHTML = '';
 }
 
 // Adjust tile size according to window size
