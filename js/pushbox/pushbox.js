@@ -342,6 +342,12 @@ function changeLevel(n) {
   return currentLevel;
 }
 
+// Level control (with - and + buttons)
+function levelControl(n) {
+  var currentLevel = Number(levelSelector.value);
+  changeLevel(currentLevel + n);
+}
+
 editorStart.draw = function() {
   if (this.selected === true) {
     mfdc.fillStyle = selectedColor;

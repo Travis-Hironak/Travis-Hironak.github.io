@@ -69,7 +69,9 @@
   <span>Déplacements : </span>
   <span id="moves">0</span>
   <span id="nextLevel" class="hidden">Niv. suivant :
+    <button class="levelControls" onclick="levelControl(-1)">-</button>
     <input id="levelInput" type="number"></input>
+    <button class="levelControls" onclick="levelControl(1)">+</button>
     <button id="reset" onclick="pbReset()">Jouer</button>
   </span>
 </div>
